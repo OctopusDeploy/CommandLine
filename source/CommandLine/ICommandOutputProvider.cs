@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Octopus.CommandLine.OptionParsing;
+using Serilog.Events;
 
 namespace Octopus.CommandLine
 {
@@ -27,6 +28,7 @@ namespace Octopus.CommandLine
         void Warning(string s);
         void Warning(string template, params object[] propertyValues);
         void Error(string template, params object[] propertyValues);
+        void Write(LogEventLevel logEventLevel, string messageTemplate, params object[] propertyValues);
         void Error(Exception ex, string messageTemplate);
     }
 }
