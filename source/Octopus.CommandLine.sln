@@ -20,6 +20,8 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "..\build\_build.csproj", "{82B7A55D-BDDE-4B09-B482-4406960D0C1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLine", "CommandLine\CommandLine.csproj", "{8C38266A-1A53-4D84-94BB-00F2C270EF94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,5 +30,9 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{82B7A55D-BDDE-4B09-B482-4406960D0C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82B7A55D-BDDE-4B09-B482-4406960D0C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
