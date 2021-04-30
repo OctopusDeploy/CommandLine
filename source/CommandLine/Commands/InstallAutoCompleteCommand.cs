@@ -20,7 +20,7 @@ namespace Octopus.CommandLine.Commands
     [Command(name: "install-autocomplete", Description = "Install a shell auto-complete script into your shell profile, if they aren't already there. Supports pwsh, zsh, bash & powershell.")]
     public class InstallAutoCompleteCommand : CommandBase
     {
-        private readonly IEnumerable<ShellCompletionInstaller> installers;
+        private readonly IEnumerable<IShellCompletionInstaller> installers;
         private readonly string supportedShells =
             Enum.GetNames(typeof(SupportedShell))
                 .Except(new [] {SupportedShell.Unspecified.ToString()})
@@ -32,7 +32,7 @@ namespace Octopus.CommandLine.Commands
         }
 
         internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem octopusFileSystem)
-            : this(commandOutputProvider, new ShellCompletionInstaller[]
+            : this(commandOutputProvider, new IShellCompletionInstaller[]
             {
                 new BashCompletionInstaller(commandOutputProvider, octopusFileSystem),
                 new PowershellCompletionInstaller(commandOutputProvider, octopusFileSystem),
@@ -42,7 +42,7 @@ namespace Octopus.CommandLine.Commands
         {
         }
 
-        internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IEnumerable<ShellCompletionInstaller> installers) : base(commandOutputProvider)
+        internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IEnumerable<IShellCompletionInstaller> installers) : base(commandOutputProvider)
         {
             this.installers = installers;
             var options = Options.For("Install AutoComplete");

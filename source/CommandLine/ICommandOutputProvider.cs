@@ -27,9 +27,6 @@ namespace Octopus.CommandLine
         void Warning(string s);
         void Warning(string template, params object[] propertyValues);
         void Error(string template, params object[] propertyValues);
-        void ServiceMessage(string messageName, object o);
         void Error(Exception ex, string messageTemplate);
-        bool ServiceMessagesEnabled();
-        void EnableServiceMessages();
     }
 }

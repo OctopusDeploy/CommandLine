@@ -5,7 +5,7 @@ using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
-    internal abstract class ShellCompletionInstaller
+    internal abstract class ShellCompletionInstaller : IShellCompletionInstaller
     {
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly IOctopusFileSystem fileSystem;

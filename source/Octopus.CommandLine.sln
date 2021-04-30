@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_build", "..\build\_build.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLine", "CommandLine\CommandLine.csproj", "{8C38266A-1A53-4D84-94BB-00F2C270EF94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{5E72F52A-F31B-4E9E-8891-69B23C4DCE12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,5 +36,9 @@ Global
 		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C38266A-1A53-4D84-94BB-00F2C270EF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E72F52A-F31B-4E9E-8891-69B23C4DCE12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E72F52A-F31B-4E9E-8891-69B23C4DCE12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E72F52A-F31B-4E9E-8891-69B23C4DCE12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E72F52A-F31B-4E9E-8891-69B23C4DCE12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
