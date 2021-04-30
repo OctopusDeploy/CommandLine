@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks Condition="!$([MSBuild]::IsOSUnixLike())">net452;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSUnixLike())">netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks Condition="!$([MSBuild]::IsOSUnixLike())">net452;netstandard2.0;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSUnixLike())">netstandard2.0;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <DebugType>portable</DebugType>
         <AssemblyName>Octopus.CommandLine</AssemblyName>
