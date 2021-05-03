@@ -3,7 +3,6 @@ using System.IO;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Octopus.Cli.Commands;
 using Octopus.CommandLine;
 using Octopus.CommandLine.Commands;
 using Serilog;

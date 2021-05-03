@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Octopus.CommandLine;
-using Octopus.CommandLine.Commands;
 using Octopus.CommandLine.Extensions;
 
-namespace Octopus.Cli.Commands
+namespace Octopus.CommandLine.Commands
 {
     [Command("help", "?", "h", Description = "Prints this help text.")]
     public class HelpCommand : CommandBase
