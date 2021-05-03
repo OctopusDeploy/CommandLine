@@ -45,7 +45,7 @@ namespace Octopus.CommandLine
             return found;
         }
 
-        ICommand GetCommand(string[] args)
+        public ICommand GetCommand(string[] args)
         {
             var first = GetFirstArgument(args);
 
