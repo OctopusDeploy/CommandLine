@@ -7,9 +7,14 @@ namespace Octopus.CommandLine
 {
     public class DefaultCommandOutputProvider : CommandOutputProviderBase
     {
-        public DefaultCommandOutputProvider(ILogger logger) : base(logger)
+        readonly string applicationName;
+
+        public DefaultCommandOutputProvider(string applicationName, ILogger logger) : base(logger)
         {
+            this.applicationName = applicationName;
         }
+
+        protected override string GetAppName() => applicationName;
 
         protected override string GetAppVersion()
         {
@@ -22,7 +27,6 @@ namespace Octopus.CommandLine
             return entryAssembly.GetName().Version.ToString();
         }
 
-        protected override string SerializeObjectToJson(object o)
-            => JsonConvert.SerializeObject(o);
+        protected override string SerializeObjectToJson(object o) => JsonConvert.SerializeObject(o);
     }
 }

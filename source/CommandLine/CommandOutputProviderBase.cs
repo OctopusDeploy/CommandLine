@@ -25,11 +25,12 @@ namespace Octopus.CommandLine
         {
             if (PrintMessages)
             {
-                logger.Information("Octopus Deploy Command Line Tool, version {Version:l}", GetAppVersion());
+                logger.Information("{Application}, version {Version:l}", GetAppName(), GetAppVersion());
                 logger.Information(string.Empty);
             }
         }
 
+        protected abstract string GetAppName();
         protected abstract string GetAppVersion();
 
         public void PrintCommandHelpHeader(string executable, string commandName, string description, TextWriter textWriter)
