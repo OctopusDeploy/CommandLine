@@ -18,7 +18,7 @@ namespace Octopus.CommandLine.ShellCompletion
 complete -F _octo_bash_complete octo
 complete -F _octo_bash_complete Octo".NormalizeNewLinesForNix();
 
-        internal BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem)
+        public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem)
             : base(commandOutputProvider, fileSystem) { }
     }
 }
