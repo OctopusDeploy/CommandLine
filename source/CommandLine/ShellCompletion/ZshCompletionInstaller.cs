@@ -42,7 +42,8 @@ namespace Octopus.CommandLine.ShellCompletion
         public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
             : base(commandOutputProvider, fileSystem, executablePaths)
         {
-            this.executablePaths = executablePaths;
+            //some DI containers will pass an empty array, instead of choosing a less specific ctor that doesn't require the missing param
+            this.executablePaths = executablePaths.Length == 0 ? new[] { AssemblyExtensions.GetExecutablePath() } : executablePaths;
         }
     }
 }
