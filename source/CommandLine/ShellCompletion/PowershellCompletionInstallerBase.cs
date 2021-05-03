@@ -9,7 +9,6 @@ namespace Octopus.CommandLine.ShellCompletion
 {
     public abstract class PowershellCompletionInstallerBase : ShellCompletionInstaller
     {
-        readonly string[] executablePaths;
         protected static string PowershellProfileFilename => "Microsoft.PowerShell_profile.ps1";
 
         public override string ProfileScript
@@ -18,7 +17,7 @@ namespace Octopus.CommandLine.ShellCompletion
             {
                 var results = new StringBuilder();
 
-                foreach (var exePath in executablePaths.Distinct(StringComparer.OrdinalIgnoreCase))
+                foreach (var exePath in ExecutablePaths.Distinct(StringComparer.OrdinalIgnoreCase))
                 {
                     var command = Path.GetFileName(exePath);
                     results.AppendLine($"Register-ArgumentCompleter -Native -CommandName {command} -ScriptBlock {{");
@@ -35,10 +34,6 @@ namespace Octopus.CommandLine.ShellCompletion
         }
 
         public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
-            : base(commandOutputProvider, fileSystem, executablePaths)
-        {
-            //some DI containers will pass an empty array, instead of choosing a less specific ctor that doesn't require the missing param
-            this.executablePaths = executablePaths.Length == 0 ? new[] { AssemblyExtensions.GetExecutablePath() } : executablePaths;
-        }
+            : base(commandOutputProvider, fileSystem, executablePaths) { }
     }
 }

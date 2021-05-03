@@ -10,23 +10,21 @@ namespace Octopus.CommandLine.ShellCompletion
 {
     public class ZshCompletionInstaller : ShellCompletionInstaller
     {
-        readonly string[] executablePaths;
-
         public override SupportedShell SupportedShell => SupportedShell.Zsh;
         public override string ProfileLocation => $"{HomeLocation}/.zshrc";
         public override string ProfileScript
         {
             get
             {
-                var sanitisedAppName = Path.GetFileName(executablePaths.First()).ToLower().Replace(".", "_").Replace(" ", "_");
+                var sanitisedAppName = Path.GetFileName(ExecutablePaths.First()).ToLower().Replace(".", "_").Replace(" ", "_");
                 var functionName = $"_{sanitisedAppName}_zsh_complete";
                 var result = new StringBuilder();
                 result.AppendLine(functionName + "()");
                 result.AppendLine("{");
-                result.AppendLine($@"    local completions=(""$({executablePaths.First()} complete $words)"")");
+                result.AppendLine($@"    local completions=(""$({ExecutablePaths.First()} complete $words)"")");
                 result.AppendLine(@"    reply=( ""${(ps:\n:)completions}"" )");
                 result.AppendLine("}");
-                foreach (var executable in executablePaths)
+                foreach (var executable in ExecutablePaths)
                     result.AppendLine($"compctl -K {functionName} {executable}");
 
                 return result.ToString().NormalizeNewLinesForNix();
@@ -42,8 +40,6 @@ namespace Octopus.CommandLine.ShellCompletion
         public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
             : base(commandOutputProvider, fileSystem, executablePaths)
         {
-            //some DI containers will pass an empty array, instead of choosing a less specific ctor that doesn't require the missing param
-            this.executablePaths = executablePaths.Length == 0 ? new[] { AssemblyExtensions.GetExecutablePath() } : executablePaths;
         }
     }
 }

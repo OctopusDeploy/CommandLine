@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Octopus.CommandLine.Commands;
+using Octopus.CommandLine.Extensions;
 using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
@@ -10,7 +11,7 @@ namespace Octopus.CommandLine.ShellCompletion
     {
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly IOctopusFileSystem fileSystem;
-        readonly string[] executablePaths;
+        protected readonly string[] ExecutablePaths;
         public static string HomeLocation => System.Environment.GetEnvironmentVariable("HOME");
         public abstract string ProfileLocation { get; }
         public abstract string ProfileScript { get; }
@@ -20,7 +21,8 @@ namespace Octopus.CommandLine.ShellCompletion
         {
             this.commandOutputProvider = commandOutputProvider;
             this.fileSystem = fileSystem;
-            this.executablePaths = executablePaths;
+            //some DI containers will pass an empty array, instead of choosing a less specific ctor that doesn't require the missing param
+            this.ExecutablePaths = executablePaths.Length == 0 ? new[] { AssemblyExtensions.GetExecutablePath() } : executablePaths;
         }
 
         public virtual void Install(bool dryRun)
@@ -69,7 +71,7 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
-        public string AllShellsPrefix => $"# start: Octopus Command Line App ({Path.GetFileName(executablePaths.First())}) Autocomplete script";
-        public string AllShellsSuffix => $"# end: Octopus Command Line App ({Path.GetFileName(executablePaths.First())}) Autocomplete script";
+        public string AllShellsPrefix => $"# start: Octopus Command Line App ({Path.GetFileName(ExecutablePaths.First())}) Autocomplete script";
+        public string AllShellsSuffix => $"# end: Octopus Command Line App ({Path.GetFileName(ExecutablePaths.First())}) Autocomplete script";
     }
 }
