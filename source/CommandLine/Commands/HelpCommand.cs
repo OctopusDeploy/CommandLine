@@ -79,6 +79,7 @@ namespace Octopus.Cli.Commands
         public void PrintDefaultOutput()
         {
             Console.ResetColor();
+            commandOutputProvider.PrintHeader();
             Console.Write("Usage: ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(executable + " <command> [<options>]");
