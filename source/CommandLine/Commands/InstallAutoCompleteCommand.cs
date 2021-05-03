@@ -26,7 +26,7 @@ namespace Octopus.CommandLine.Commands
                 .Except(new [] {SupportedShell.Unspecified.ToString()})
                 .ReadableJoin();
 
-        internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IEnumerable<IShellCompletionInstaller> installers) : base(commandOutputProvider)
+        public InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IEnumerable<IShellCompletionInstaller> installers) : base(commandOutputProvider)
         {
             this.installers = installers;
             var options = Options.For("Install AutoComplete");
