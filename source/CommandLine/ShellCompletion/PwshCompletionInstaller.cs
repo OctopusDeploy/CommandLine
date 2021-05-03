@@ -19,10 +19,10 @@ namespace Octopus.CommandLine.ShellCompletion
 
         public override string ProfileScript => base.ProfileScript.NormalizeNewLines();
 
-        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executableNames)
-            : this(commandOutputProvider, new OctopusFileSystem(), executableNames) { }
+        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
+            : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }
 
-        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
-            : base(commandOutputProvider, fileSystem, executableNames) { }
+        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
+            : base(commandOutputProvider, fileSystem, executablePaths) { }
     }
 }

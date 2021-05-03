@@ -1,4 +1,5 @@
 
+using System.IO;
 using System.Linq;
 using System.Text;
 using Octopus.CommandLine.Commands;
@@ -9,7 +10,7 @@ namespace Octopus.CommandLine.ShellCompletion
 {
     public class ZshCompletionInstaller : ShellCompletionInstaller
     {
-        readonly string[] executableNames;
+        readonly string[] executablePaths;
 
         public override SupportedShell SupportedShell => SupportedShell.Zsh;
         public override string ProfileLocation => $"{HomeLocation}/.zshrc";
@@ -17,28 +18,28 @@ namespace Octopus.CommandLine.ShellCompletion
         {
             get
             {
-                var sanitisedAppName = executableNames.First().ToLower().Replace(".", "_").Replace(" ", "_");
+                var sanitisedAppName = Path.GetFileName(executablePaths.First()).ToLower().Replace(".", "_").Replace(" ", "_");
                 var functionName = $"_{sanitisedAppName}_zsh_complete";
                 var result = new StringBuilder();
                 result.AppendLine(functionName + "()");
                 result.AppendLine("{");
-                result.AppendLine($@"    local completions=(""$({executableNames.First()} complete $words)"")");
+                result.AppendLine($@"    local completions=(""$({executablePaths.First()} complete $words)"")");
                 result.AppendLine(@"    reply=( ""${(ps:\n:)completions}"" )");
                 result.AppendLine("}");
-                foreach (var executable in executableNames)
+                foreach (var executable in executablePaths)
                     result.AppendLine($"compctl -K {functionName} {executable}");
 
                 return result.ToString().NormalizeNewLinesForNix();
             }
         }
 
-        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executableNames)
-            : this(commandOutputProvider, new OctopusFileSystem(), executableNames) { }
+        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
+            : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }
 
-        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
-            : base(commandOutputProvider, fileSystem, executableNames)
+        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
+            : base(commandOutputProvider, fileSystem, executablePaths)
         {
-            this.executableNames = executableNames;
+            this.executablePaths = executablePaths;
         }
     }
 }

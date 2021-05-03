@@ -10,17 +10,17 @@ namespace Octopus.CommandLine.ShellCompletion
     {
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly IOctopusFileSystem fileSystem;
-        readonly string[] executableNames;
+        readonly string[] executablePaths;
         public static string HomeLocation => System.Environment.GetEnvironmentVariable("HOME");
         public abstract string ProfileLocation { get; }
         public abstract string ProfileScript { get; }
         public abstract SupportedShell SupportedShell { get; }
 
-        public ShellCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
+        public ShellCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
         {
             this.commandOutputProvider = commandOutputProvider;
             this.fileSystem = fileSystem;
-            this.executableNames = executableNames;
+            this.executablePaths = executablePaths;
         }
 
         public virtual void Install(bool dryRun)
@@ -69,7 +69,7 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
-        public string AllShellsPrefix => $"# start: Octopus Command Line App ({executableNames.First()}) Autocomplete script";
-        public string AllShellsSuffix => $"# end: Octopus Command Line App ({executableNames.First()}) Autocomplete script";
+        public string AllShellsPrefix => $"# start: Octopus Command Line App ({Path.GetFileName(executablePaths.First())}) Autocomplete script";
+        public string AllShellsSuffix => $"# end: Octopus Command Line App ({Path.GetFileName(executablePaths.First())}) Autocomplete script";
     }
 }
