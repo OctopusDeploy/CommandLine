@@ -25,7 +25,7 @@ namespace Octopus.CommandLine
         {
             if (PrintMessages)
             {
-                logger.Information("{Application}, version {Version:l}", GetAppName(), GetAppVersion());
+                logger.Information($"{GetAppName()}, version {GetAppVersion()}");
                 logger.Information(string.Empty);
             }
         }
