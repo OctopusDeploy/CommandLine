@@ -40,6 +40,7 @@ namespace Octopus.CommandLine.Plumbing
                         }
                     }
                     File.Copy(sourceFile, targetFile, true);
+                    return;
                 }
                 catch
                 {
