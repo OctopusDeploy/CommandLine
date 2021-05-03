@@ -11,6 +11,8 @@ namespace Tests.Helpers
         {
         }
 
+        protected override string GetAppName() => "My app";
+
         protected override string GetAppVersion() => "1.0.0";
 
         protected override string SerializeObjectToJson(object o) => JsonConvert.SerializeObject(o);
