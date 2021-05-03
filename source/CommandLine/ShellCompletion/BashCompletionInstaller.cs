@@ -18,7 +18,7 @@ namespace Octopus.CommandLine.ShellCompletion
                 var sanitisedAppName = executableNames.First().ToLower().Replace(".", "_").Replace(" ", "_");
                 var functionName = $"_{sanitisedAppName}_bash_complete";
                 var result = new StringBuilder();
-                result.AppendLine(functionName + "()");
+                result.AppendLine($"{functionName}()");
                 result.AppendLine("{");
                 result.AppendLine("    local params=${COMP_WORDS[@]:1}");
                 result.AppendLine($@"    local completions=""$({executableNames.First()} complete ${{params}})");
