@@ -5,6 +5,7 @@ namespace Octopus.CommandLine.ShellCompletion
 {
     public abstract class PowershellCompletionInstallerBase : ShellCompletionInstaller
     {
+        readonly string[] executableNames;
         protected static string PowershellProfileFilename => "Microsoft.PowerShell_profile.ps1";
 
         public override string ProfileScript =>
@@ -15,6 +16,9 @@ namespace Octopus.CommandLine.ShellCompletion
         [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_)
     }
 }";
-        public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem) : base(commandOutputProvider, fileSystem) { }
+        public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames) : base(commandOutputProvider, fileSystem)
+        {
+            this.executableNames = executableNames;
+        }
     }
 }

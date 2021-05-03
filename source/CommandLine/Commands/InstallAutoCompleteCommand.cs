@@ -26,22 +26,6 @@ namespace Octopus.CommandLine.Commands
                 .Except(new [] {SupportedShell.Unspecified.ToString()})
                 .ReadableJoin();
 
-        public InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider)
-            : this(commandOutputProvider, new OctopusFileSystem())
-        {
-        }
-
-        internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem octopusFileSystem)
-            : this(commandOutputProvider, new IShellCompletionInstaller[]
-            {
-                new BashCompletionInstaller(commandOutputProvider, octopusFileSystem),
-                new PowershellCompletionInstaller(commandOutputProvider, octopusFileSystem),
-                new PwshCompletionInstaller(commandOutputProvider, octopusFileSystem),
-                new ZshCompletionInstaller(commandOutputProvider, octopusFileSystem),
-            })
-        {
-        }
-
         internal InstallAutoCompleteCommand(ICommandOutputProvider commandOutputProvider, IEnumerable<IShellCompletionInstaller> installers) : base(commandOutputProvider)
         {
             this.installers = installers;

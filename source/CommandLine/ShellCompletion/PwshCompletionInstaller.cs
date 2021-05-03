@@ -18,6 +18,7 @@ namespace Octopus.CommandLine.ShellCompletion
             : Path.Combine(LinuxPwshConfigLocation, PowershellProfileFilename);
 
         public override string ProfileScript => base.ProfileScript.NormalizeNewLines();
-        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem) : base(commandOutputProvider, fileSystem) { }
+        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
+            : base(commandOutputProvider, fileSystem, executableNames) { }
     }
 }

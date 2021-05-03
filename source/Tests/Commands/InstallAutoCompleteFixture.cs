@@ -30,10 +30,10 @@ namespace Tests.Commands
 
         static IEnumerable<IShellCompletionInstaller> GetShellCompletionInstallers()
         {
-            var zshCompletionInstaller = new ZshCompletionInstaller(commandOutputProvider, fileSystem);
-            var pwshCompletionInstaller = new PwshCompletionInstaller(commandOutputProvider, fileSystem);
-            var bashCompletionInstaller = new BashCompletionInstaller(commandOutputProvider, fileSystem);
-            var powershellCompletionInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem);
+            var zshCompletionInstaller = new ZshCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
+            var pwshCompletionInstaller = new PwshCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
+            var bashCompletionInstaller = new BashCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
+            var powershellCompletionInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
 
             var installers = new List<IShellCompletionInstaller>
             {
@@ -85,7 +85,7 @@ namespace Tests.Commands
             {
                 try
                 {
-                    var installers = new[] { new PowershellCompletionInstaller(commandOutputProvider, fileSystem) };
+                    var installers = new[] { new PowershellCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" }) };
                     installAutoCompleteCommand = new InstallAutoCompleteCommand(commandOutputProvider, installers);
                     await installAutoCompleteCommand.Execute(new[] { "--shell=powershell" });
                 }
@@ -105,7 +105,7 @@ namespace Tests.Commands
         [Test]
         public async Task ShouldAllowInstallationOfPowershellOnWindows()
         {
-            var powershellCompletionInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem);
+            var powershellCompletionInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
 
             if (ExecutionEnvironment.IsRunningOnWindows)
             {
@@ -173,7 +173,7 @@ namespace Tests.Commands
         [Test]
         public async Task PwshCompletionInstaller_ShouldUseCorrectNewlinesForPlatform()
         {
-            var pwshInstaller = new PwshCompletionInstaller(commandOutputProvider, fileSystem);
+            var pwshInstaller = new PwshCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
             await installAutoCompleteCommand.Execute(new[] { $"--shell={pwshInstaller.SupportedShell.ToString()}", "--dryRun" });
             if (ExecutionEnvironment.IsRunningOnWindows)
                 commandOutputProvider.Received().Information(Arg.Is<string>(arg => arg.Contains(pwshInstaller.ProfileScript.NormalizeNewLinesForWindows())));
@@ -187,7 +187,7 @@ namespace Tests.Commands
         {
             if (ExecutionEnvironment.IsRunningOnWindows)
             {
-                var powershellInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem);
+                var powershellInstaller = new PowershellCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
                 await installAutoCompleteCommand.Execute(new[]
                     { $"--shell={powershellInstaller.SupportedShell.ToString()}", "--dryRun" });
                 commandOutputProvider.Received()
@@ -205,7 +205,7 @@ namespace Tests.Commands
         {
             if (ExecutionEnvironment.IsRunningOnMac || ExecutionEnvironment.IsRunningOnNix)
             {
-                var bashInstaller = new BashCompletionInstaller(commandOutputProvider, fileSystem);
+                var bashInstaller = new BashCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
                 await installAutoCompleteCommand.Execute(new[]
                     { $"--shell={bashInstaller.SupportedShell.ToString()}", "--dryRun" });
                 commandOutputProvider.Received()
@@ -223,7 +223,7 @@ namespace Tests.Commands
         {
             if (ExecutionEnvironment.IsRunningOnMac || ExecutionEnvironment.IsRunningOnNix)
             {
-                var zshInstaller = new ZshCompletionInstaller(commandOutputProvider, fileSystem);
+                var zshInstaller = new ZshCompletionInstaller(commandOutputProvider, fileSystem, new []{ "octo", "Octo" });
                 await installAutoCompleteCommand.Execute(new[]
                     { $"--shell={zshInstaller.SupportedShell.ToString()}", "--dryRun" });
                 commandOutputProvider.Received()
