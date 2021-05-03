@@ -32,6 +32,9 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
+        public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executableNames)
+            : this(commandOutputProvider, new OctopusFileSystem(), executableNames) { }
+
         public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
             : base(commandOutputProvider, fileSystem)
         {

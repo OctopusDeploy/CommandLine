@@ -32,6 +32,9 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
+        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executableNames)
+            : this(commandOutputProvider, new OctopusFileSystem(), executableNames) { }
+
         public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
             : base(commandOutputProvider, fileSystem)
         {
