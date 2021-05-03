@@ -13,7 +13,7 @@ namespace Octopus.CommandLine.Extensions
 
         public static string GetExecutableName()
         {
-            return Path.GetFileNameWithoutExtension(GetExecutableName());
+            return Path.GetFileNameWithoutExtension(GetExecutablePath());
         }
     }
 }
