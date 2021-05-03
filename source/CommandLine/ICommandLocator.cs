@@ -9,6 +9,7 @@ namespace Octopus.CommandLine
     {
         ICommandMetadata[] List();
         ICommand Find(string name);
+        ICommand GetCommand(string[] args);
     }
 
     public class CommandLocator : ICommandLocator
@@ -42,6 +43,25 @@ namespace Octopus.CommandLine
                 select t).FirstOrDefault();
 
             return found;
+        }
+
+        ICommand GetCommand(string[] args)
+        {
+            var first = GetFirstArgument(args);
+
+            if (string.IsNullOrWhiteSpace(first))
+                return Find("help");
+
+            var command = Find(first);
+            if (command == null)
+                throw new CommandException("Error: Unrecognized command '" + first + "'");
+
+            return command;
+        }
+
+        static string GetFirstArgument(IEnumerable<string> args)
+        {
+            return (args.FirstOrDefault() ?? string.Empty).ToLowerInvariant().TrimStart('-', '/');
         }
     }
 }
