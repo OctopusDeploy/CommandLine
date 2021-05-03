@@ -13,6 +13,6 @@ namespace Tests.Helpers
 
         protected override string GetAppVersion() => "1.0.0";
 
-        protected override string SerializeObjectToJason(object o) => JsonConvert.SerializeObject(o);
+        protected override string SerializeObjectToJson(object o) => JsonConvert.SerializeObject(o);
     }
 }
