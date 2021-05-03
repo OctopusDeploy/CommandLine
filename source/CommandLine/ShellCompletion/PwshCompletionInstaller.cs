@@ -19,6 +19,9 @@ namespace Octopus.CommandLine.ShellCompletion
 
         public override string ProfileScript => base.ProfileScript.NormalizeNewLines();
 
+        public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider)
+            : this(commandOutputProvider, new OctopusFileSystem(), new[] { AssemblyExtensions.GetExecutablePath() }) { }
+
         public PwshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
             : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }
 

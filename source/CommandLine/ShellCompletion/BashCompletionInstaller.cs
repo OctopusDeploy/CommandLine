@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,6 +34,9 @@ namespace Octopus.CommandLine.ShellCompletion
                 return result.ToString().NormalizeNewLinesForNix();
             }
         }
+
+        public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider)
+            : this(commandOutputProvider, new OctopusFileSystem(), new[] { AssemblyExtensions.GetExecutablePath() }) { }
 
         public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
             : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }

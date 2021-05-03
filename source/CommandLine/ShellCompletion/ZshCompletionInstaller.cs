@@ -33,6 +33,9 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
+        public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider)
+            : this(commandOutputProvider, new OctopusFileSystem(), new[] { AssemblyExtensions.GetExecutablePath() }) { }
+
         public ZshCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
             : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }
 

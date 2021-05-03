@@ -15,6 +15,9 @@ namespace Octopus.CommandLine.ShellCompletion
         public override string ProfileLocation => Path.Combine(WindowsPowershellConfigLocation, PowershellProfileFilename);
         public override string ProfileScript => base.ProfileScript.NormalizeNewLinesForWindows();
 
+        public PowershellCompletionInstaller(ICommandOutputProvider commandOutputProvider)
+            : this(commandOutputProvider, new OctopusFileSystem(), new[] { AssemblyExtensions.GetExecutablePath() }) { }
+
         public PowershellCompletionInstaller(ICommandOutputProvider commandOutputProvider, string[] executablePaths)
             : this(commandOutputProvider, new OctopusFileSystem(), executablePaths) { }
 
