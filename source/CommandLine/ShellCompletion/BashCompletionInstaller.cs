@@ -36,7 +36,7 @@ namespace Octopus.CommandLine.ShellCompletion
             : this(commandOutputProvider, new OctopusFileSystem(), executableNames) { }
 
         public BashCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
-            : base(commandOutputProvider, fileSystem)
+            : base(commandOutputProvider, fileSystem, executableNames)
         {
             this.executableNames = executableNames;
         }

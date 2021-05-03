@@ -16,7 +16,8 @@ namespace Octopus.CommandLine.ShellCompletion
         [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_)
     }
 }";
-        public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames) : base(commandOutputProvider, fileSystem)
+        public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
+            : base(commandOutputProvider, fileSystem, executableNames)
         {
             this.executableNames = executableNames;
         }

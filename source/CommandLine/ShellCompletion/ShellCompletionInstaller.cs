@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text;
 using Octopus.CommandLine.Commands;
 using Octopus.CommandLine.Plumbing;
@@ -9,15 +10,17 @@ namespace Octopus.CommandLine.ShellCompletion
     {
         private readonly ICommandOutputProvider commandOutputProvider;
         private readonly IOctopusFileSystem fileSystem;
+        readonly string[] executableNames;
         public static string HomeLocation => System.Environment.GetEnvironmentVariable("HOME");
         public abstract string ProfileLocation { get; }
         public abstract string ProfileScript { get; }
         public abstract SupportedShell SupportedShell { get; }
 
-        public ShellCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem)
+        public ShellCompletionInstaller(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executableNames)
         {
             this.commandOutputProvider = commandOutputProvider;
             this.fileSystem = fileSystem;
+            this.executableNames = executableNames;
         }
 
         public virtual void Install(bool dryRun)
@@ -66,7 +69,7 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
-        public const string AllShellsPrefix = "# start: Octopus CLI (octo) Autocomplete script";
-        public const string AllShellsSuffix = "# end: Octopus CLI (octo) Autocomplete script";
+        public string AllShellsPrefix => $"# start: Octopus Command Line App ({executableNames.First()}) Autocomplete script";
+        public string AllShellsSuffix => $"# end: Octopus Command Line App ({executableNames.First()}) Autocomplete script";
     }
 }
