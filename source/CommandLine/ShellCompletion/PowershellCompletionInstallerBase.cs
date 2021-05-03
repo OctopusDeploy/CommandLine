@@ -22,8 +22,8 @@ namespace Octopus.CommandLine.ShellCompletion
                     var command = Path.GetFileName(exePath);
                     results.AppendLine($"Register-ArgumentCompleter -Native -CommandName {command} -ScriptBlock {{");
                     results.AppendLine("    param($wordToComplete, $commandAst, $cursorPosition)");
-                    results.AppendLine("    $parms = $commandAst.ToString().Split(' ') | select -skip 1");
-                    results.AppendLine($"    {exePath} complete $parms | % {{");
+                    results.AppendLine("    $params = $commandAst.ToString().Split(' ') | Select-Object -skip 1");
+                    results.AppendLine($"    {exePath} complete $params | ForEach-Object {{");
                     results.AppendLine("        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_)");
                     results.AppendLine("    }");
                     results.AppendLine("}");
