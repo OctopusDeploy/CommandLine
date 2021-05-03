@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Octopus.CommandLine.Plumbing
 {
-    internal interface IOctopusFileSystem
+    public interface IOctopusFileSystem
     {
         bool FileExists(string path);
         string ReadAllText(string scriptFile);

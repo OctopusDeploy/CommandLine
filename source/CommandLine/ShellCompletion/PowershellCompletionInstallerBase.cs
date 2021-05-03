@@ -3,7 +3,7 @@ using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
-    internal abstract class PowershellCompletionInstallerBase : ShellCompletionInstaller
+    public abstract class PowershellCompletionInstallerBase : ShellCompletionInstaller
     {
         protected static string PowershellProfileFilename => "Microsoft.PowerShell_profile.ps1";
 

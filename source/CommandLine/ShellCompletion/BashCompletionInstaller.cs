@@ -4,7 +4,7 @@ using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
-    internal class BashCompletionInstaller : ShellCompletionInstaller
+    public class BashCompletionInstaller : ShellCompletionInstaller
     {
         public override SupportedShell SupportedShell => SupportedShell.Bash;
         public override string ProfileLocation => $"{HomeLocation}/.bashrc";

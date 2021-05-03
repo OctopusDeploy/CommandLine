@@ -5,7 +5,7 @@ using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
-    internal class ZshCompletionInstaller : ShellCompletionInstaller
+    public class ZshCompletionInstaller : ShellCompletionInstaller
     {
         public override SupportedShell SupportedShell => SupportedShell.Zsh;
         public override string ProfileLocation => $"{HomeLocation}/.zshrc";

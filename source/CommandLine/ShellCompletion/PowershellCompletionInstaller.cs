@@ -5,7 +5,7 @@ using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
-    internal class PowershellCompletionInstaller : PowershellCompletionInstallerBase
+    public class PowershellCompletionInstaller : PowershellCompletionInstallerBase
     {
         public override SupportedShell SupportedShell => SupportedShell.Powershell;
         private static string WindowsPowershellConfigLocation => Path.Combine(
