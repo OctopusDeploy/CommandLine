@@ -9,7 +9,6 @@ namespace Octopus.CommandLine.Commands
     public class HelpCommand : CommandBase
     {
         readonly Lazy<ICommandLocator> commands;
-        string executable;
 
         public HelpCommand(Lazy<ICommandLocator> commands, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)
         {
@@ -23,8 +22,6 @@ namespace Octopus.CommandLine.Commands
                 Options.Parse(commandLineArguments);
 
                 commandOutputProvider.PrintMessages = OutputFormat == OutputFormat.Default;
-
-                executable = AssemblyExtensions.GetExecutableName();
 
                 var commandName = commandLineArguments.FirstOrDefault();
 
@@ -76,6 +73,8 @@ namespace Octopus.CommandLine.Commands
 
         public void PrintDefaultOutput()
         {
+            var executable = AssemblyExtensions.GetExecutableName();
+
             Console.ResetColor();
             commandOutputProvider.PrintHeader();
             Console.Write("Usage: ");
