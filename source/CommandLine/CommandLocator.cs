@@ -20,7 +20,7 @@ namespace Octopus.CommandLine
             return
                 (from t in commands
                     let attribute =
-                        (ICommandMetadata) IntrospectionExtensions.GetTypeInfo(t.GetType()).GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
+                        (ICommandMetadata) t.GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
                     where attribute != null
                     select attribute).ToArray();
         }
