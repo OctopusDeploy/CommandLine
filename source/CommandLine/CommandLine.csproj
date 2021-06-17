@@ -7,6 +7,7 @@
         <DebugType>portable</DebugType>
         <AssemblyName>Octopus.CommandLine</AssemblyName>
         <PackageId>Octopus.CommandLine</PackageId>
+        <PackageIcon>icon.png</PackageIcon>
         <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -14,6 +15,13 @@
         <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
         <RootNamespace>Octopus.CommandLine</RootNamespace>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <Authors>Octopus Deploy Pty. Ltd.</Authors>
+        <Copyright>Copyright © Octopus Deploy 2017</Copyright>
+        <PackageProjectUrl>https://github.com/OctopusDeploy/CommandLine</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/OctopusDeploy/CommandLine</RepositoryUrl>
+        <Description>The command line parsing library used by many of Octopus apps. Supports global and command specific help, json output, auto-complete and more.</Description>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
