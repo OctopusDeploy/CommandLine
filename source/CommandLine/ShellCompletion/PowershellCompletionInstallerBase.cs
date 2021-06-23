@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Octopus.CommandLine.Extensions;
 using Octopus.CommandLine.Plumbing;
 
 namespace Octopus.CommandLine.ShellCompletion
@@ -33,7 +32,7 @@ namespace Octopus.CommandLine.ShellCompletion
             }
         }
 
-        public PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
+        protected PowershellCompletionInstallerBase(ICommandOutputProvider commandOutputProvider, IOctopusFileSystem fileSystem, string[] executablePaths)
             : base(commandOutputProvider, fileSystem, executablePaths) { }
     }
 }
