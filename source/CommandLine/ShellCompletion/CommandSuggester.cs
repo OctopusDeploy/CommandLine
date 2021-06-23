@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Octopus.CommandLine.Commands;
+using Octopus.CommandLine.Extensions;
 
 namespace Octopus.CommandLine.ShellCompletion
 {
@@ -10,12 +13,14 @@ namespace Octopus.CommandLine.ShellCompletion
             string[] words,
             IReadOnlyDictionary<string, string[]> completionItems)
         {
+            var executablePath = AssemblyExtensions.GetExecutablePath();
+            var exeName = Path.GetFileNameWithoutExtension(executablePath);
+            var exeNameWithoutExtension = Path.GetFileNameWithoutExtension(executablePath);
             // some shells will pass the command name as invoked on the command line.
             // If so, strip them from the beginning of the array
             words = words
                 .Take(2)
-                //todo: MATTR: make this work for non-octo apps
-                .Except(new[] { "octo", "complete" }, StringComparer.OrdinalIgnoreCase)
+                .Except(new[] { exeName, exeNameWithoutExtension, CompleteCommand.Name }, StringComparer.OrdinalIgnoreCase)
                 .Union(words.Skip(2))
                 .Where(word => string.IsNullOrWhiteSpace(word) == false)
                 .ToArray();
@@ -40,13 +45,13 @@ namespace Octopus.CommandLine.ShellCompletion
                 }
                 else
                 {
-                    // e.g. `octo --searchTerm`
+                    // e.g. `exename --searchTerm`
                     return GetBaseOptionSuggestions(completionItems, searchTerm).OrderBy(name => name);
                 }
             }
             else if (ZeroOrOneSubCommands(words, allSubCommands))
             {
-                // e.g. `octo searchterm` or just `octo`
+                // e.g. `exename searchterm` or just `exename`
                 suggestions.AddRange(GetSubCommandSuggestions(completionItems, searchTerm));
             }
 
@@ -76,7 +81,7 @@ namespace Octopus.CommandLine.ShellCompletion
 
         static IEnumerable<string> GetBaseOptionSuggestions(IReadOnlyDictionary<string, string[]> completionItems, string searchTerm)
         {
-            // If you type 'octo', you'll be redirected to the 'help' command, so show these options
+            // If you type 'exename', you'll be redirected to the 'help' command, so show these options
             return GetSubCommandOptionSuggestions(completionItems, "help", searchTerm);
         }
 

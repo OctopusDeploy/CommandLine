@@ -40,23 +40,22 @@ namespace Octopus.CommandLine.Commands
         public OutputFormat HelpOutputFormat { get; set; }
 
         public abstract Task Execute(string[] commandLineArguments);
+        public ICommandMetadata CommandMetadata => GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault() as ICommandMetadata;
 
         public virtual void GetHelp(TextWriter writer, string[] args)
         {
-            var typeInfo = this.GetType().GetTypeInfo();
 
             var executable = AssemblyExtensions.GetExecutableName();
-            var commandAttribute = typeInfo.GetCustomAttribute<CommandAttribute>();
             string commandName;
             var description = string.Empty;
-            if (commandAttribute == null)
+            if (CommandMetadata == null)
             {
                 commandName = args.FirstOrDefault();
             }
             else
             {
-                commandName = commandAttribute.Name;
-                description = commandAttribute.Description;
+                commandName = CommandMetadata.Name;
+                description = CommandMetadata.Description;
             }
 
             commandOutputProvider.PrintMessages = HelpOutputFormat == OutputFormat.Default;
@@ -93,7 +92,7 @@ namespace Octopus.CommandLine.Commands
                         Type = p.Type.Name,
                         Sensitive = p.Sensitive ? (bool?)true : null,
                         AllowsMultiple = p.AllowsMultiple ? (bool?)true : null, //allows tools (such as nuke.build) to auto-generate better code
-                        Values = p.Type.IsEnum ? Enum.GetNames(p.Type).Where(x => p.Type.GetField(x).GetCustomAttribute<ObsoleteAttribute>() == null) : null
+                        Values = p.Type.IsEnum ? Enum.GetNames(p.Type).Where(x => p.Type.GetField(x)?.GetCustomAttribute<ObsoleteAttribute>() == null) : null
                     })
                 })
             }, writer);

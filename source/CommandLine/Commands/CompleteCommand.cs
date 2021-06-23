@@ -8,9 +8,10 @@ using Octopus.CommandLine.ShellCompletion;
 
 namespace Octopus.CommandLine.Commands
 {
-    [Command("complete", Description = "Supports command line auto completion.")]
+    [Command(Name, Description = "Supports command line auto completion.")]
     public class CompleteCommand : CommandBase
     {
+        public const string Name = "complete";
         private readonly Lazy<ICommandLocator> commandLocator;
 
         public CompleteCommand(Lazy<ICommandLocator> commandLocator, ICommandOutputProvider commandOutputProvider) : base(commandOutputProvider)

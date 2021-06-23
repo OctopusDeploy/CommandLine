@@ -7,5 +7,6 @@ namespace Octopus.CommandLine.Commands
     {
         void GetHelp(TextWriter writer, string[] args);
         Task Execute(string[] commandLineArguments);
+        ICommandMetadata CommandMetadata { get; }
     }
 }

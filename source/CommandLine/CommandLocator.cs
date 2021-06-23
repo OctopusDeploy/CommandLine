@@ -17,24 +17,19 @@ namespace Octopus.CommandLine
 
         public ICommandMetadata[] List()
         {
-            return
-                (from t in commands
-                    let attribute =
-                        (ICommandMetadata) t.GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
-                    where attribute != null
-                    select attribute).ToArray();
+            return commands
+                .Where(t => t.CommandMetadata != null)
+                .Select(t => t.CommandMetadata)
+                .ToArray();
         }
 
         public ICommand Find(string name)
         {
             name = name.Trim().ToLowerInvariant();
 
-            var found = (from t in commands
-                let attribute =
-                    (ICommandMetadata) t.GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault()
-                where attribute != null
-                where attribute.Name == name || attribute.Aliases.Any(a => a == name)
-                select t).FirstOrDefault();
+            var found = commands
+                .Where(command => command.CommandMetadata != null)
+                .FirstOrDefault(command => command.CommandMetadata.Name == name || command.CommandMetadata.Aliases.Any(a => a == name));
 
             return found;
         }
