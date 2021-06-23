@@ -23,7 +23,7 @@ namespace Octopus.CommandLine.ShellCompletion
                     results.AppendLine($"Register-ArgumentCompleter -Native -CommandName {command} -ScriptBlock {{");
                     results.AppendLine("    param($wordToComplete, $commandAst, $cursorPosition)");
                     results.AppendLine("    $params = $commandAst.ToString().Split(' ') | Select-Object -skip 1");
-                    results.AppendLine($"    {exePath} complete $params | ForEach-Object {{");
+                    results.AppendLine($"   & \"{exePath}\" complete $params | ForEach-Object {{");
                     results.AppendLine("        [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterName', $_)");
                     results.AppendLine("    }");
                     results.AppendLine("}");
