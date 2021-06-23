@@ -19,7 +19,7 @@ namespace Octopus.CommandLine.ShellCompletion
 
                 foreach (var exePath in ExecutablePaths.Distinct(StringComparer.OrdinalIgnoreCase))
                 {
-                    var command = Path.GetFileName(exePath);
+                    var command = Path.GetFileNameWithoutExtension(exePath);
                     results.AppendLine($"Register-ArgumentCompleter -Native -CommandName {command} -ScriptBlock {{");
                     results.AppendLine("    param($wordToComplete, $commandAst, $cursorPosition)");
                     results.AppendLine("    $params = $commandAst.ToString().Split(' ') | Select-Object -skip 1");
