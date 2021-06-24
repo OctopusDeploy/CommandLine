@@ -66,7 +66,6 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
-
     Target Test => _ => _
         .DependsOn(Compile)
         .Executes(() =>
