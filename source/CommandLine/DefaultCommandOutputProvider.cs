@@ -26,7 +26,5 @@ namespace Octopus.CommandLine
                 return assemblyInformationalVersionAttribute.InformationalVersion;
             return entryAssembly.GetName().Version.ToString();
         }
-
-        protected override string SerializeObjectToJson(object o) => JsonConvert.SerializeObject(o);
     }
 }

@@ -11,11 +11,9 @@ Please see [Contributing](CONTRIBUTING.md).
 Add a reference to Octopus.CommandLine, Newtonsoft.Json and Autofac:
 ```bash
 dotnet add package Octopus.CommandLine
-dotnet add package Newtonsoft.Json
 dotnet add package Autofac
 ```
 Note:
-* Newtonsoft.Json can be swapped for other json serialization implementations.
 * Autofac can be swapped for your container of choice
 
 ### Build your container

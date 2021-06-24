@@ -1,10 +1,14 @@
 // ReSharper disable RedundantUsingDirective
 
+using System.IO;
+using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Utilities.Collections;
 using OctoVersion.Core;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -24,6 +28,7 @@ class Build : NukeBuild
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath LocalPackagesDirectory => RootDirectory / ".." / "LocalPackages";
+    AbsolutePath OctopusCommandLineFolder => SourceDirectory / "CommandLine";
 
     Target Clean => _ => _
         .Before(Restore)
@@ -73,18 +78,75 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
-    Target Pack => _ => _
-        .DependsOn(Compile)
+    Target Merge => _ => _
         .DependsOn(Test)
         .Executes(() =>
         {
-            DotNetPack(_ => _
-                .SetProject(Solution)
-                .SetConfiguration(Configuration)
-                .SetOutputDirectory(ArtifactsDirectory)
-                .EnableNoBuild()
-                .AddProperty("Version", OctoVersionInfo.FullSemVer)
-            );
+            //todo: figure out a better way of doing this.
+            //      unfortunately we cant use nuke to parse it from the solution file, as our use of things like
+            //      "([MSBuild]::IsOSUnixLike())" means that it wont parse
+
+            var targets = new[] { "netstandard2.0", "netcoreapp2.1", "netcoreapp3.1", "net5.0" };
+            if (EnvironmentInfo.IsWin)
+                targets = targets.Concat("net452").ToArray();
+
+            foreach (var target in targets)
+            {
+                var inputFolder = OctopusCommandLineFolder / "bin" / Configuration / target;
+                var outputFolder = OctopusCommandLineFolder / "bin" / Configuration / $"{target}-Merged";
+                EnsureExistingDirectory(outputFolder);
+
+                // The call to ILRepack with .EnableInternalize() requires the Octopus.Server.Client.dll assembly to be first in the list.
+                var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octopus.*.dll")
+                    .Select(x => x.ToString())
+                    .OrderByDescending(x => x.Contains("Octopus.CommandLine.dll"))
+                    .ThenBy(x => x)
+                    .ToArray();
+
+                //note: ilmerge requires CopyLocalLockFileAssemblies set to true in the csproj
+                ILRepackTasks.ILRepack(_ => _
+                    .SetAssemblies(inputAssemblies)
+                    .SetOutput(outputFolder / "Octopus.CommandLine.dll")
+                    .EnableInternalize()
+                    .DisableParallel()
+                    .EnableXmldocs()
+                    .SetLib(inputFolder)
+                );
+
+                DeleteDirectory(inputFolder);
+                MoveDirectory(outputFolder, inputFolder);
+            }
+        });
+
+    Target Pack => _ => _
+        .DependsOn(Compile)
+        .DependsOn(Test)
+        .DependsOn(Merge)
+        .Executes(() =>
+        {
+            var nuspec = OctopusCommandLineFolder / "Octopus.CommandLine.nuspec";
+            try
+            {
+
+                ReplaceTextInFiles(nuspec, "<version>$version$</version>",
+                    $"<version>{OctoVersionInfo.FullSemVer}</version>");
+
+                DotNetPack(_ => _
+                    .SetProject(Solution)
+                    .SetProcessArgumentConfigurator(args =>
+                    {
+                        args.Add($"/p:NuspecFile=Octopus.CommandLine.nuspec");
+                        return args;
+                    })
+                    .SetVersion(OctoVersionInfo.FullSemVer)
+                    .SetConfiguration(Configuration)
+                    .SetOutputDirectory(ArtifactsDirectory)
+                    .EnableNoBuild());
+            }
+            finally
+            {
+                ReplaceTextInFiles(nuspec, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+            }
         });
 
     Target CopyToLocalPackages => _ => _
@@ -95,6 +157,13 @@ class Build : NukeBuild
             EnsureExistingDirectory(LocalPackagesDirectory);
             CopyFileToDirectory(ArtifactsDirectory / $"{Solution.Name}.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDirectory, FileExistsPolicy.Overwrite);
         });
+
+    void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
+    {
+        var fileText = File.ReadAllText(path);
+        fileText = fileText.Replace(oldValue, newValue);
+        File.WriteAllText(path, fileText);
+    }
 
     /// Support plugins are available for:
     /// - JetBrains ReSharper        https://nuke.build/resharper

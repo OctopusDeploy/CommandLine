@@ -68,6 +68,7 @@
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Merge",
               "Pack",
               "Restore",
               "Test"
@@ -88,6 +89,7 @@
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Merge",
               "Pack",
               "Restore",
               "Test"

@@ -88,10 +88,8 @@ namespace Octopus.CommandLine
 
         public void Json(object o)
         {
-            logger.Information(SerializeObjectToJson(o));
+            logger.Information(JsonConvert.SerializeObject(o));
         }
-
-        protected abstract string SerializeObjectToJson(object o);
 
         public void Json(object o, TextWriter writer)
         {
