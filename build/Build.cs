@@ -123,18 +123,19 @@ class Build : NukeBuild
         .DependsOn(Merge)
         .Executes(() =>
         {
-            var nuspec = OctopusCommandLineFolder / "Octopus.CommandLine.nuspec";
+            var nuspec = "Octopus.CommandLine.nuspec";
+            var nuspecPath = OctopusCommandLineFolder / nuspec;
             try
             {
 
-                ReplaceTextInFiles(nuspec, "<version>$version$</version>",
-                    $"<version>{OctoVersionInfo.FullSemVer}</version>");
+                ReplaceTextInFiles(nuspecPath, "<version>$version$</version>", $"<version>{OctoVersionInfo.FullSemVer}</version>");
+                ReplaceTextInFiles(nuspecPath, "\\$configuration$\\", $"\\{Configuration.ToString()}\\");
 
                 DotNetPack(_ => _
                     .SetProject(Solution)
                     .SetProcessArgumentConfigurator(args =>
                     {
-                        args.Add($"/p:NuspecFile=Octopus.CommandLine.nuspec");
+                        args.Add($"/p:NuspecFile=" + nuspec);
                         return args;
                     })
                     .SetVersion(OctoVersionInfo.FullSemVer)
@@ -144,7 +145,8 @@ class Build : NukeBuild
             }
             finally
             {
-                ReplaceTextInFiles(nuspec, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+                ReplaceTextInFiles(nuspecPath, $"<version>{OctoVersionInfo.FullSemVer}</version>", $"<version>$version$</version>");
+                ReplaceTextInFiles(nuspecPath, $"\\{Configuration.ToString()}\\", "\\$configuration$\\");
             }
         });
 
