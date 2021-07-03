@@ -8,7 +8,7 @@ namespace Octopus.CommandLine
         string SerializeObjectToJson(object o);
     }
 
-    class DefaultCommandOutputJsonSerializer : ICommandOutputJsonSerializer
+    public class DefaultCommandOutputJsonSerializer : ICommandOutputJsonSerializer
     {
         public string SerializeObjectToJson(object o) => JsonConvert.SerializeObject(o);
     }
