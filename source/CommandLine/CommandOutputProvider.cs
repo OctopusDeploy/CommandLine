@@ -17,6 +17,11 @@ namespace Octopus.CommandLine
         readonly string applicationName;
         readonly ICommandOutputJsonSerializer commandOutputJsonSerializer;
 
+        public CommandOutputProvider(string applicationName, ILogger logger)
+            : this(applicationName, new DefaultCommandOutputJsonSerializer(), logger)
+        {
+        }
+
         public CommandOutputProvider(string applicationName, ICommandOutputJsonSerializer commandOutputJsonSerializer, ILogger logger)
         {
             this.applicationName = applicationName;
