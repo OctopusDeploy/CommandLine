@@ -28,9 +28,11 @@ private static IContainer BuildContainer()
         .CreateLogger();
     builder.RegisterInstance(Log.Logger).As<ILogger>().SingleInstance();
 
-    //Sometimes you'll want to provide your own implementation of this, but for most usages
-    //the default one works fine
-    builder.RegisterType<DefaultCommandOutputProvider>()
+    //Sometimes you'll want to provide your own implementation of these, but for most usages
+    //the default ones work fine
+    builder.RegisterType<DefaultCommandOutputJsonSerializer>()
+        .As<ICommandOutputJsonSerializer>();
+    builder.RegisterType<CommandOutputProvider>()
         .WithParameter("applicationName", "My sample application")
         .As<ICommandOutputProvider>()
         .SingleInstance();

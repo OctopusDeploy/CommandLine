@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Octopus.CommandLine.OptionParsing;
@@ -9,12 +10,17 @@ using Serilog.Events;
 
 namespace Octopus.CommandLine
 {
-    public abstract class CommandOutputProviderBase : ICommandOutputProvider
+    public class CommandOutputProvider : ICommandOutputProvider
     {
         readonly ILogger logger;
 
-        protected CommandOutputProviderBase(ILogger logger)
+        readonly string applicationName;
+        readonly ICommandOutputJsonSerializer commandOutputJsonSerializer;
+
+        public CommandOutputProvider(string applicationName, ICommandOutputJsonSerializer commandOutputJsonSerializer, ILogger logger)
         {
+            this.applicationName = applicationName;
+            this.commandOutputJsonSerializer = commandOutputJsonSerializer;
             this.logger = logger;
             PrintMessages = true; // unless told otherwise
         }
@@ -30,8 +36,18 @@ namespace Octopus.CommandLine
             }
         }
 
-        protected abstract string GetAppName();
-        protected abstract string GetAppVersion();
+        public string GetAppName() => applicationName;
+
+        public string GetAppVersion()
+        {
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly == null)
+                throw new ApplicationException("Unable to determine entry assembly");
+            var assemblyInformationalVersionAttribute = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (assemblyInformationalVersionAttribute != null)
+                return assemblyInformationalVersionAttribute.InformationalVersion;
+            return entryAssembly.GetName().Version.ToString();
+        }
 
         public void PrintCommandHelpHeader(string executable, string commandName, string description, TextWriter textWriter)
         {
@@ -88,10 +104,8 @@ namespace Octopus.CommandLine
 
         public void Json(object o)
         {
-            logger.Information(SerializeObjectToJson(o));
+            logger.Information(commandOutputJsonSerializer.SerializeObjectToJson(o));
         }
-
-        protected abstract string SerializeObjectToJson(object o);
 
         public void Json(object o, TextWriter writer)
         {
@@ -133,5 +147,6 @@ namespace Octopus.CommandLine
             if (PrintMessages)
                 logger.Error(ex, messageTemplate);
         }
+
     }
 }
