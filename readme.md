@@ -34,6 +34,7 @@ private static IContainer BuildContainer()
         .As<ICommandOutputJsonSerializer>();
     builder.RegisterType<CommandOutputProvider>()
         .WithParameter("applicationName", "My sample application")
+        .WithParameter("applicationVersion", typeof(Startup).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion) 
         .As<ICommandOutputProvider>()
         .SingleInstance();
         

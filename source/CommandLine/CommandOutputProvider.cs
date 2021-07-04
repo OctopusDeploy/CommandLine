@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Octopus.CommandLine.OptionParsing;
@@ -12,18 +11,20 @@ namespace Octopus.CommandLine
 {
     public class CommandOutputProvider : ICommandOutputProvider
     {
+        public string applicationVersion { get; }
         readonly ILogger logger;
 
         readonly string applicationName;
         readonly ICommandOutputJsonSerializer commandOutputJsonSerializer;
 
-        public CommandOutputProvider(string applicationName, ILogger logger)
-            : this(applicationName, new DefaultCommandOutputJsonSerializer(), logger)
+        public CommandOutputProvider(string applicationName, string applicationVersion, ILogger logger)
+            : this(applicationName, applicationVersion, new DefaultCommandOutputJsonSerializer(), logger)
         {
         }
 
-        public CommandOutputProvider(string applicationName, ICommandOutputJsonSerializer commandOutputJsonSerializer, ILogger logger)
+        public CommandOutputProvider(string applicationName, string applicationVersion, ICommandOutputJsonSerializer commandOutputJsonSerializer, ILogger logger)
         {
+            this.applicationVersion = applicationVersion;
             this.applicationName = applicationName;
             this.commandOutputJsonSerializer = commandOutputJsonSerializer;
             this.logger = logger;
@@ -36,22 +37,9 @@ namespace Octopus.CommandLine
         {
             if (PrintMessages)
             {
-                logger.Information($"{GetAppName()}, version {GetAppVersion()}");
+                logger.Information($"{applicationName}, version {applicationVersion}");
                 logger.Information(string.Empty);
             }
-        }
-
-        public string GetAppName() => applicationName;
-
-        public string GetAppVersion()
-        {
-            var entryAssembly = Assembly.GetEntryAssembly();
-            if (entryAssembly == null)
-                throw new ApplicationException("Unable to determine entry assembly");
-            var assemblyInformationalVersionAttribute = entryAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            if (assemblyInformationalVersionAttribute != null)
-                return assemblyInformationalVersionAttribute.InformationalVersion;
-            return entryAssembly.GetName().Version.ToString();
         }
 
         public void PrintCommandHelpHeader(string executable, string commandName, string description, TextWriter textWriter)
