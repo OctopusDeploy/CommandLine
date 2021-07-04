@@ -31,7 +31,7 @@ namespace Tests.Commands
 
             commandLocator = Substitute.For<ICommandLocator>();
             logger = new LoggerConfiguration().WriteTo.TextWriter(output).CreateLogger();
-            commandOutputProvider = new CommandOutputProvider("TestApp", new DefaultCommandOutputJsonSerializer(), logger);
+            commandOutputProvider = new CommandOutputProvider("TestApp", "1.0.0", new DefaultCommandOutputJsonSerializer(), logger);
             commandLocator.List()
                 .Returns(new ICommandMetadata[]
                 {
