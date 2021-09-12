@@ -17,9 +17,6 @@
             <group targetFramework=".NETFramework4.5.2">
                 <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
             </group>
-            <group targetFramework=".NETCoreApp2.1">
-                <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
-            </group>
             <group targetFramework=".NETCoreApp3.1">
                 <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
             </group>
