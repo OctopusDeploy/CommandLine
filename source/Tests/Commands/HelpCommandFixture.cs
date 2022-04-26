@@ -47,7 +47,7 @@ namespace Tests.Commands
 
             output.ToString()
                 .Should()
-                .MatchRegex(@"Usage: (dotnet|testhost|ReSharperTestRunner64) <command> \[<options>\]")
+                .MatchRegex(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) <command> \[<options>\]")
                 .And.Contain("Where <command> is one of:")
                 .And.Contain("create-foo");
         }
@@ -61,7 +61,7 @@ namespace Tests.Commands
 
             output.ToString()
                 .Should()
-                .MatchRegex(@"Usage: (dotnet|testhost|ReSharperTestRunner64) speak \[<options>\]");
+                .MatchRegex(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) speak \[<options>\]");
         }
 
         [Test]
