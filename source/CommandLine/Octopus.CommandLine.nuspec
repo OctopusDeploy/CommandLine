@@ -14,13 +14,13 @@
         <copyright>Copyright © Octopus Deploy 2021</copyright>
         <repository url="https://github.com/OctopusDeploy/CommandLine" />
         <dependencies>
-            <group targetFramework=".NETFramework4.5.2">
+            <group targetFramework=".NETFramework4.6.2">
                 <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
             </group>
             <group targetFramework=".NETCoreApp3.1">
                 <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
             </group>
-            <group targetFramework="net5.0">
+            <group targetFramework="net6.0">
                 <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
             </group>
             <group targetFramework=".NETStandard2.0">
@@ -30,8 +30,8 @@
     </metadata>
     <files>
         <file src="icon.png" target="images\" />
-        <file src="bin\$configuration$\net452\Octopus.CommandLine.dll" target="lib\net452" />
-        <file src="bin\$configuration$\net5.0\Octopus.CommandLine.dll" target="lib\net5.0" />
+        <file src="bin\$configuration$\net462\Octopus.CommandLine.dll" target="lib\net462" />
+        <file src="bin\$configuration$\net6.0\Octopus.CommandLine.dll" target="lib\net6.0" />
         <file src="bin\$configuration$\netcoreapp3.1\Octopus.CommandLine.dll" target="lib\netcoreapp3.1" />
         <file src="bin\$configuration$\netstandard2.0\Octopus.CommandLine.dll" target="lib\netstandard2.0" />
     </files>
