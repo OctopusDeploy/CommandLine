@@ -99,7 +99,7 @@ class Build : NukeBuild
             //      unfortunately we cant use nuke to parse it from the solution file, as our use of things like
             //      "([MSBuild]::IsOSUnixLike())" means that it wont parse
 
-            var targets = new[] { "netstandard2.0", "netcoreapp3.1", "net5.0", "net6.0" };
+            var targets = new[] { "netstandard2.0", "netcoreapp3.1", "net6.0" };
             if (EnvironmentInfo.IsWin)
                 targets = targets.Concat("net462").ToArray();
 
