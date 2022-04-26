@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks Condition="!$([MSBuild]::IsOSUnixLike())">net462;netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSUnixLike())">netstandard2.0;netcoreapp3.1;net6.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
