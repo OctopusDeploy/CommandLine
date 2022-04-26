@@ -22,7 +22,7 @@ class Build : NukeBuild
 {
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")] readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Solution] readonly Solution Solution;
+    [Solution(GenerateProjects = true)] readonly Solution Solution;
 
     [NukeOctoVersion] readonly OctoVersionInfo OctoVersionInfo;
 
@@ -82,13 +82,7 @@ class Build : NukeBuild
         .DependsOn(Test)
         .Executes(() =>
         {
-            //todo: figure out a better way of doing this.
-            //      unfortunately we cant use nuke to parse it from the solution file, as our use of things like
-            //      "([MSBuild]::IsOSUnixLike())" means that it wont parse
-
-            var targets = new[] { "netstandard2.0", "netcoreapp3.1", "net5.0" };
-            if (EnvironmentInfo.IsWin)
-                targets = targets.Concat("net452").ToArray();
+            var targets = Solution.CommandLine.GetTargetFrameworks();
 
             foreach (var target in targets)
             {
