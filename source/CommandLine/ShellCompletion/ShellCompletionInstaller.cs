@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Octopus.CommandLine.Commands;
 using Octopus.CommandLine.Extensions;
 using Octopus.CommandLine.Plumbing;
 
@@ -49,6 +50,13 @@ namespace Octopus.CommandLine.ShellCompletion
                 {
                     if (profileText.Contains(AllShellsPrefix) || profileText.Contains(AllShellsSuffix) || profileText.Contains(ProfileScript))
                     {
+                        if (!profileText.Contains(ProfileScript)){
+                            var message =
+                                $"Looks like command line completion is already installed, but points to a different executable.{Environment.NewLine}" +
+                                $"Please manually edit the file {ProfileLocation} to remove the existing auto complete script and then re-install.";
+                            throw new CommandException(message);
+                        }
+
                         commandOutputProvider.Information("Looks like command line completion is already installed. Nothing to do.");
                         return;
                     }
