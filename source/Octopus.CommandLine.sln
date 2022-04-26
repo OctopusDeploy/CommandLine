@@ -8,9 +8,10 @@ ProjectSection(SolutionItems) = preProject
 	..\build.ps1 = ..\build.ps1
 	..\build.sh = ..\build.sh
 	..\CONTRIBUTING.md = ..\CONTRIBUTING.md
-	..\GitVersion.yml = ..\GitVersion.yml
 	..\LICENSE.txt = ..\LICENSE.txt
 	..\readme.md = ..\readme.md
+	..\global.json = ..\global.json
+	..\octoversion.json = ..\octoversion.json
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{F2E52E31-40D3-4D04-964B-10EB9432BA47}"
