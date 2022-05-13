@@ -5,7 +5,7 @@ using Octopus.CommandLine.Extensions;
 
 namespace Octopus.CommandLine.Commands
 {
-    [Command("help", "?", "h", Description = "Prints this help text.")]
+    [Command("help", "?", "h", Description = "Prints this help text. Pass the name of a command to see the arguments required for that command.")]
     public class HelpCommand : CommandBase
     {
         readonly Lazy<ICommandLocator> commands;
