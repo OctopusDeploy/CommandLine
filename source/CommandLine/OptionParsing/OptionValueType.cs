@@ -28,12 +28,11 @@
 
 using System;
 
-namespace Octopus.CommandLine.OptionParsing
+namespace Octopus.CommandLine.OptionParsing;
+
+public enum OptionValueType
 {
-    public enum OptionValueType
-    {
-        None,
-        Optional,
-        Required
-    }
+    None,
+    Optional,
+    Required
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Octopus.CommandLine
+namespace Octopus.CommandLine;
+
+public interface ISupportFormattedOutput
 {
-    public interface ISupportFormattedOutput
-    {
-        Task Request();
+    Task Request();
 
-        void PrintDefaultOutput();
+    void PrintDefaultOutput();
 
-        void PrintJsonOutput();
-    }
+    void PrintJsonOutput();
 }

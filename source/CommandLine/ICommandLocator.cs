@@ -1,12 +1,11 @@
 using System;
 using Octopus.CommandLine.Commands;
 
-namespace Octopus.CommandLine
+namespace Octopus.CommandLine;
+
+public interface ICommandLocator
 {
-    public interface ICommandLocator
-    {
-        ICommandMetadata[] List();
-        ICommand Find(string name);
-        ICommand GetCommand(string[] args);
-    }
+    ICommandMetadata[] List();
+    ICommand Find(string name);
+    ICommand GetCommand(string[] args);
 }

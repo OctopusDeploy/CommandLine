@@ -2,39 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Octopus.CommandLine.Extensions
+namespace Octopus.CommandLine.Extensions;
+
+static class Humanize
 {
-    static class Humanize
+    public static string ReadableJoin<T>(this IEnumerable<T> list, string junction = "and")
     {
-        public static string ReadableJoin<T>(this IEnumerable<T> list, string junction = "and")
+        if (list == null) throw new ArgumentNullException(nameof(list));
+
+        var result = new StringBuilder();
+        object prev = null;
+
+        string separator = "", final = "";
+        var enumerator = list.GetEnumerator();
+        while (enumerator.MoveNext())
         {
-            if (list == null) throw new ArgumentNullException(nameof(list));
-
-            var result = new StringBuilder();
-            object prev = null;
-
-            string separator = "", final = "";
-            var enumerator = list.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (prev != null)
-                {
-                    result.Append(separator);
-                    result.Append(prev);
-                    separator = ", ";
-                    final = " " + junction + " ";
-                }
-
-                prev = enumerator.Current;
-            }
-
             if (prev != null)
             {
-                result.Append(final);
+                result.Append(separator);
                 result.Append(prev);
+                separator = ", ";
+                final = " " + junction + " ";
             }
 
-            return result.ToString();
+            prev = enumerator.Current;
         }
+
+        if (prev != null)
+        {
+            result.Append(final);
+            result.Append(prev);
+        }
+
+        return result.ToString();
     }
 }

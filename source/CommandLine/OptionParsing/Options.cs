@@ -30,34 +30,33 @@ using System;
 using System.Collections.Generic;
 using Octopus.CommandLine.Extensions;
 
-namespace Octopus.CommandLine.OptionParsing
+namespace Octopus.CommandLine.OptionParsing;
+
+public class Options
 {
-    public class Options
+    public Options()
+        => OptionSets = new Dictionary<string, OptionSet>();
+
+    public Dictionary<string, OptionSet> OptionSets { get; }
+
+    public OptionSet For(string groupName)
     {
-        public Options()
-            => OptionSets = new Dictionary<string, OptionSet>();
-
-        public Dictionary<string, OptionSet> OptionSets { get; }
-
-        public OptionSet For(string groupName)
+        if (!OptionSets.ContainsKey(groupName))
         {
-            if (!OptionSets.ContainsKey(groupName))
-            {
-                var o = new OptionSet();
-                OptionSets[groupName] = o;
-                return o;
-            }
-
-            return OptionSets[groupName];
+            var o = new OptionSet();
+            OptionSets[groupName] = o;
+            return o;
         }
 
-        public List<string> Parse(IEnumerable<string> arguments)
-        {
-            var combined = new OptionSet();
-            foreach (var group in OptionSets.Keys)
-                combined.AddRange(OptionSets[group]);
+        return OptionSets[groupName];
+    }
 
-            return combined.Parse(arguments);
-        }
+    public List<string> Parse(IEnumerable<string> arguments)
+    {
+        var combined = new OptionSet();
+        foreach (var group in OptionSets.Keys)
+            combined.AddRange(OptionSets[group]);
+
+        return combined.Parse(arguments);
     }
 }

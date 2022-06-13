@@ -37,7 +37,7 @@ class Build : NukeBuild
     [OctoVersion(UpdateBuildNumber = true, BranchParameter = nameof(BranchName),
         AutoDetectBranchParameter = nameof(AutoDetectBranch), Framework = "net6.0")]
     readonly OctoVersionInfo OctoVersionInfo;
-    
+
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath LocalPackagesDirectory => RootDirectory / ".." / "LocalPackages";

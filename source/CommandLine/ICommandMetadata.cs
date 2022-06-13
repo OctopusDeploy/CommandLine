@@ -1,11 +1,10 @@
 using System;
 
-namespace Octopus.CommandLine
+namespace Octopus.CommandLine;
+
+public interface ICommandMetadata
 {
-    public interface ICommandMetadata
-    {
-        string Name { get; }
-        string[] Aliases { get; }
-        string Description { get; }
-    }
+    string Name { get; }
+    string[] Aliases { get; }
+    string Description { get; }
 }
