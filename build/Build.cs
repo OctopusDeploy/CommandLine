@@ -21,7 +21,14 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [UnsetVisualStudioEnvironmentVariables]
 class Build : NukeBuild
 {
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")] readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    /// Support plugins are available for:
+    /// - JetBrains ReSharper        https://nuke.build/resharper
+    /// - JetBrains Rider            https://nuke.build/rider
+    /// - Microsoft VisualStudio     https://nuke.build/visualstudio
+    /// - Microsoft VSCode           https://nuke.build/vscode
+    /// 
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [Solution(GenerateProjects = true)] readonly Solution Solution;
 
@@ -44,18 +51,10 @@ class Build : NukeBuild
     AbsolutePath OctopusCommandLineFolder => SourceDirectory / "CommandLine";
 
     Target Clean => _ => _
-        .Before(Restore)
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj", "**/TestResults").ForEach(DeleteDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             EnsureCleanDirectory(ArtifactsDirectory);
-        });
-
-    [PublicAPI]
-    Target CalculateVersion => _ => _
-        .Executes(() =>
-        {
-            //all the magic happens inside `[OctoVersion]` above. we just need a target for TeamCity to call
         });
 
     Target Restore => _ => _
@@ -67,7 +66,6 @@ class Build : NukeBuild
         });
 
     Target Compile => _ => _
-        .DependsOn(Clean)
         .DependsOn(Restore)
         .Executes(() =>
         {
@@ -77,9 +75,11 @@ class Build : NukeBuild
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
                 .SetVersion(OctoVersionInfo.FullSemVer)
+                .SetInformationalVersion(OctoVersionInfo.InformationalVersion)
                 .EnableNoRestore());
         });
 
+    [PublicAPI]
     Target Test => _ => _
         .DependsOn(Compile)
         .Executes(() =>
@@ -92,7 +92,7 @@ class Build : NukeBuild
         });
 
     Target Merge => _ => _
-        .DependsOn(Test)
+        .DependsOn(Compile)
         .Executes(() =>
         {
             var targets = Solution.CommandLine.GetTargetFrameworks();
@@ -103,7 +103,7 @@ class Build : NukeBuild
                 var outputFolder = OctopusCommandLineFolder / "bin" / Configuration / $"{target}-Merged";
                 EnsureExistingDirectory(outputFolder);
 
-                // The call to ILRepack with .EnableInternalize() requires the Octopus.Server.Client.dll assembly to be first in the list.
+                // The call to ILRepack with .EnableInternalize() requires the Octopus.CommandLine.dll assembly to be first in the list.
                 var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octopus.*.dll")
                     .Select(x => x.ToString())
                     .OrderByDescending(x => x.Contains("Octopus.CommandLine.dll"))
@@ -126,8 +126,6 @@ class Build : NukeBuild
         });
 
     Target Pack => _ => _
-        .DependsOn(Compile)
-        .DependsOn(Test)
         .DependsOn(Merge)
         .Executes(() =>
         {
@@ -148,7 +146,10 @@ class Build : NukeBuild
                     .SetVersion(OctoVersionInfo.FullSemVer)
                     .SetConfiguration(Configuration)
                     .SetOutputDirectory(ArtifactsDirectory)
-                    .EnableNoBuild());
+                    .EnableNoBuild()
+                    .DisableIncludeSymbols()
+                    .SetVerbosity(DotNetVerbosity.Normal)
+                );
             }
             finally
             {
@@ -157,27 +158,26 @@ class Build : NukeBuild
             }
         });
 
-    [UsedImplicitly]
     Target CopyToLocalPackages => _ => _
         .OnlyWhenStatic(() => IsLocalBuild)
         .TriggeredBy(Pack)
         .Executes(() =>
         {
             EnsureExistingDirectory(LocalPackagesDirectory);
-            CopyFileToDirectory(ArtifactsDirectory / $"{Solution.Name}.{OctoVersionInfo.FullSemVer}.nupkg", LocalPackagesDirectory, FileExistsPolicy.Overwrite);
+            ArtifactsDirectory.GlobFiles("*.nupkg")
+                .ForEach(package => CopyFileToDirectory(package, LocalPackagesDirectory, FileExistsPolicy.Overwrite));
         });
 
-    void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
+    static void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
     {
         var fileText = File.ReadAllText(path);
         fileText = fileText.Replace(oldValue, newValue);
         File.WriteAllText(path, fileText);
     }
 
-    /// Support plugins are available for:
-    /// - JetBrains ReSharper        https://nuke.build/resharper
-    /// - JetBrains Rider            https://nuke.build/rider
-    /// - Microsoft VisualStudio     https://nuke.build/visualstudio
-    /// - Microsoft VSCode           https://nuke.build/vscode
-    public static int Main() => Execute<Build>(x => x.Pack);
+    Target Default => _ => _
+        .DependsOn(Pack)
+        .DependsOn(CopyToLocalPackages);
+
+    public static int Main() => Execute<Build>(x => x.Default);
 }

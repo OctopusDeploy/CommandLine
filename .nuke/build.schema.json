@@ -79,10 +79,10 @@
           "items": {
             "type": "string",
             "enum": [
-              "CalculateVersion",
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Default",
               "Merge",
               "Pack",
               "Restore",
@@ -100,10 +100,10 @@
           "items": {
             "type": "string",
             "enum": [
-              "CalculateVersion",
               "Clean",
               "Compile",
               "CopyToLocalPackages",
+              "Default",
               "Merge",
               "Pack",
               "Restore",
