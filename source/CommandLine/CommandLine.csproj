@@ -25,6 +25,7 @@
         <!-- copy dependencies to the output folder (for netstandard) so we can ilmerge them together -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
