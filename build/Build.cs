@@ -26,7 +26,7 @@ class Build : NukeBuild
     /// - JetBrains Rider            https://nuke.build/rider
     /// - Microsoft VisualStudio     https://nuke.build/visualstudio
     /// - Microsoft VSCode           https://nuke.build/vscode
-    /// 
+
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
@@ -69,8 +69,6 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            Log.Information("Building {0} v{1}", Solution.Name, OctoVersionInfo.FullSemVer);
-
             DotNetBuild(_ => _
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
@@ -156,6 +154,13 @@ class Build : NukeBuild
                 ReplaceTextInFiles(nuspecPath, $"<version>{OctoVersionInfo.FullSemVer}</version>", "<version>$version$</version>");
                 ReplaceTextInFiles(nuspecPath, $"\\{Configuration.ToString()}\\", "\\$configuration$\\");
             }
+
+            static void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
+            {
+                var fileText = File.ReadAllText(path);
+                fileText = fileText.Replace(oldValue, newValue);
+                File.WriteAllText(path, fileText);
+            }
         });
 
     Target CopyToLocalPackages => _ => _
@@ -167,13 +172,6 @@ class Build : NukeBuild
             ArtifactsDirectory.GlobFiles("*.nupkg")
                 .ForEach(package => CopyFileToDirectory(package, LocalPackagesDirectory, FileExistsPolicy.Overwrite));
         });
-
-    static void ReplaceTextInFiles(AbsolutePath path, string oldValue, string newValue)
-    {
-        var fileText = File.ReadAllText(path);
-        fileText = fileText.Replace(oldValue, newValue);
-        File.WriteAllText(path, fileText);
-    }
 
     Target Default => _ => _
         .DependsOn(Pack)
