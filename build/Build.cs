@@ -26,7 +26,6 @@ class Build : NukeBuild
     /// - JetBrains Rider            https://nuke.build/rider
     /// - Microsoft VisualStudio     https://nuke.build/visualstudio
     /// - Microsoft VSCode           https://nuke.build/vscode
-
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
@@ -44,7 +43,7 @@ class Build : NukeBuild
     [OctoVersion(UpdateBuildNumber = true, BranchParameter = nameof(BranchName),
         AutoDetectBranchParameter = nameof(AutoDetectBranch), Framework = "net6.0")]
     readonly OctoVersionInfo OctoVersionInfo;
-    
+
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath LocalPackagesDirectory => RootDirectory / ".." / "LocalPackages";

@@ -2,47 +2,46 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace Octopus.CommandLine.Plumbing
+namespace Octopus.CommandLine.Plumbing;
+
+class OctopusFileSystem : IOctopusFileSystem
 {
-    class OctopusFileSystem : IOctopusFileSystem
+    public bool FileExists(string path)
+        => File.Exists(path);
+
+    public string ReadAllText(string path)
+        => File.ReadAllText(path);
+
+    public void CopyFile(string sourceFile, string targetFile, int overwriteFileRetryAttempts = 3)
     {
-        public bool FileExists(string path)
-            => File.Exists(path);
+        for (var i = 0; i < overwriteFileRetryAttempts; i++)
+            try
+            {
+                var fi = new FileInfo(targetFile);
+                if (fi.Exists)
+                    if ((fi.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        fi.Attributes = fi.Attributes & ~FileAttributes.ReadOnly;
+                File.Copy(sourceFile, targetFile, true);
+                return;
+            }
+            catch
+            {
+                if (i == overwriteFileRetryAttempts - 1)
+                    throw;
+                Thread.Sleep(1000 + 2000 * i);
+            }
 
-        public string ReadAllText(string path)
-            => File.ReadAllText(path);
+        throw new Exception("Internal error, cannot get here");
+    }
 
-        public void CopyFile(string sourceFile, string targetFile, int overwriteFileRetryAttempts = 3)
-        {
-            for (var i = 0; i < overwriteFileRetryAttempts; i++)
-                try
-                {
-                    var fi = new FileInfo(targetFile);
-                    if (fi.Exists)
-                        if ((fi.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                            fi.Attributes = fi.Attributes & ~FileAttributes.ReadOnly;
-                    File.Copy(sourceFile, targetFile, true);
-                    return;
-                }
-                catch
-                {
-                    if (i == overwriteFileRetryAttempts - 1)
-                        throw;
-                    Thread.Sleep(1000 + 2000 * i);
-                }
+    public void OverwriteFile(string path, string contents)
+    {
+        File.WriteAllText(path, contents);
+    }
 
-            throw new Exception("Internal error, cannot get here");
-        }
-
-        public void OverwriteFile(string path, string contents)
-        {
-            File.WriteAllText(path, contents);
-        }
-
-        public void EnsureDirectoryExists(string directoryPath)
-        {
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-        }
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        if (!Directory.Exists(directoryPath))
+            Directory.CreateDirectory(directoryPath);
     }
 }

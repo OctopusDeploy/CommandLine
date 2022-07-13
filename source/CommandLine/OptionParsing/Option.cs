@@ -129,187 +129,186 @@ using System.ComponentModel;
 using Octopus.CommandLine.Commands;
 using Octopus.CommandLine.Extensions;
 
-namespace Octopus.CommandLine.OptionParsing
+namespace Octopus.CommandLine.OptionParsing;
+
+public abstract class Option
 {
-    public abstract class Option
+    static readonly char[] NameTerminator = { '=', ':' };
+
+    protected Option(string prototype, string description, bool sensitive = false, bool allowsMultiple = false)
+        : this(prototype,
+            description,
+            1,
+            sensitive,
+            allowsMultiple)
     {
-        static readonly char[] NameTerminator = { '=', ':' };
-
-        protected Option(string prototype, string description, bool sensitive = false, bool allowsMultiple = false)
-            : this(prototype,
-                description,
-                1,
-                sensitive,
-                allowsMultiple)
-        {
-        }
-
-        protected Option(string prototype,
-            string description,
-            int maxValueCount,
-            bool sensitive = false,
-            bool allowsMultiple = false)
-        {
-            if (prototype == null)
-                throw new ArgumentNullException(nameof(prototype));
-            if (prototype.Length == 0)
-                throw new ArgumentException("Cannot be the empty string.", nameof(prototype));
-            if (maxValueCount < 0)
-                throw new ArgumentOutOfRangeException(nameof(maxValueCount));
-
-            Prototype = prototype;
-            Names = prototype.Split('|');
-            Description = description;
-            MaxValueCount = maxValueCount;
-            Sensitive = sensitive;
-            AllowsMultiple = allowsMultiple;
-            OptionValueType = ParsePrototype();
-
-            if (MaxValueCount == 0 && OptionValueType != OptionValueType.None)
-                throw new ArgumentException(
-                    "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
-                    "OptionValueType.Optional.",
-                    nameof(maxValueCount));
-            if (OptionValueType == OptionValueType.None && maxValueCount > 1)
-                throw new ArgumentException(
-                    string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
-                    nameof(maxValueCount));
-            if (Array.IndexOf(Names, "<>") >= 0 &&
-                (Names.Length == 1 && OptionValueType != OptionValueType.None ||
-                    Names.Length > 1 && MaxValueCount > 1))
-                throw new ArgumentException(
-                    "The default option handler '<>' cannot require values.",
-                    nameof(prototype));
-        }
-
-        public string Prototype { get; }
-
-        public string Description { get; }
-
-        public OptionValueType OptionValueType { get; }
-
-        public int MaxValueCount { get; }
-        public bool Sensitive { get; }
-        public bool AllowsMultiple { get; }
-
-        public string[] Names { get; }
-
-        internal string[] ValueSeparators { get; private set; }
-        public abstract Type Type { get; }
-
-        public string[] GetNames()
-            => (string[])Names.Clone();
-
-        public string[] GetValueSeparators()
-        {
-            if (ValueSeparators == null)
-                return new string[0];
-            return (string[])ValueSeparators.Clone();
-        }
-
-        protected static T Parse<T>(string value, OptionContext c)
-        {
-            var conv = TypeDescriptor.GetConverter(typeof(T));
-            var t = default(T);
-            try
-            {
-                if (value != null)
-                    t = (T)conv.ConvertFromString(value);
-            }
-            catch (FormatException) when (typeof(T).IsEnum)
-            {
-                throw new CommandException($"Could not convert string `{value}' to type {typeof(T).Name} for option `{c.OptionName}'. Valid values are {Enum.GetNames(typeof(T)).ReadableJoin()}.");
-            }
-            catch (Exception ex) when (!(ex is CommandException))
-            {
-                throw new CommandException($"Could not convert string `{value}' to type {typeof(T).Name} for option `{c.OptionName}'.");
-            }
-
-            return t;
-        }
-
-        OptionValueType ParsePrototype()
-        {
-            var c = '\0';
-            var seps = new List<string>();
-            for (var i = 0; i < Names.Length; ++i)
-            {
-                var name = Names[i];
-                if (name.Length == 0)
-                    throw new ArgumentException("Empty option names are not supported.");
-
-                var end = name.IndexOfAny(NameTerminator);
-                if (end == -1)
-                    continue;
-                Names[i] = name.Substring(0, end);
-                if (c == '\0' || c == name[end])
-                    c = name[end];
-                else
-                    throw new ArgumentException(
-                        string.Format("Conflicting option types: '{0}' vs. '{1}'.", c, name[end]));
-                AddSeparators(name, end, seps);
-            }
-
-            if (c == '\0')
-                return OptionValueType.None;
-
-            if (MaxValueCount <= 1 && seps.Count != 0)
-                throw new ArgumentException(
-                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", MaxValueCount));
-            if (MaxValueCount > 1)
-            {
-                if (seps.Count == 0)
-                    ValueSeparators = new[] { ":", "=" };
-                else if (seps.Count == 1 && seps[0].Length == 0)
-                    ValueSeparators = null;
-                else
-                    ValueSeparators = seps.ToArray();
-            }
-
-            return c == '=' ? OptionValueType.Required : OptionValueType.Optional;
-        }
-
-        static void AddSeparators(string name, int end, ICollection<string> seps)
-        {
-            var start = -1;
-            for (var i = end + 1; i < name.Length; ++i)
-                switch (name[i])
-                {
-                    case '{':
-                        if (start != -1)
-                            throw new ArgumentException(
-                                string.Format("Ill-formed name/value separator found in \"{0}\".", name));
-                        start = i + 1;
-                        break;
-                    case '}':
-                        if (start == -1)
-                            throw new ArgumentException(
-                                string.Format("Ill-formed name/value separator found in \"{0}\".", name));
-                        seps.Add(name.Substring(start, i - start));
-                        start = -1;
-                        break;
-                    default:
-                        if (start == -1)
-                            seps.Add(name[i].ToString());
-                        break;
-                }
-
-            if (start != -1)
-                throw new ArgumentException(
-                    string.Format("Ill-formed name/value separator found in \"{0}\".", name));
-        }
-
-        public void Invoke(OptionContext c)
-        {
-            OnParseComplete(c);
-            c.OptionName = null;
-            c.Option = null;
-            c.OptionValues.Clear();
-        }
-
-        protected abstract void OnParseComplete(OptionContext c);
-
-        public override string ToString()
-            => Prototype;
     }
+
+    protected Option(string prototype,
+        string description,
+        int maxValueCount,
+        bool sensitive = false,
+        bool allowsMultiple = false)
+    {
+        if (prototype == null)
+            throw new ArgumentNullException(nameof(prototype));
+        if (prototype.Length == 0)
+            throw new ArgumentException("Cannot be the empty string.", nameof(prototype));
+        if (maxValueCount < 0)
+            throw new ArgumentOutOfRangeException(nameof(maxValueCount));
+
+        Prototype = prototype;
+        Names = prototype.Split('|');
+        Description = description;
+        MaxValueCount = maxValueCount;
+        Sensitive = sensitive;
+        AllowsMultiple = allowsMultiple;
+        OptionValueType = ParsePrototype();
+
+        if (MaxValueCount == 0 && OptionValueType != OptionValueType.None)
+            throw new ArgumentException(
+                "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
+                "OptionValueType.Optional.",
+                nameof(maxValueCount));
+        if (OptionValueType == OptionValueType.None && maxValueCount > 1)
+            throw new ArgumentException(
+                string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
+                nameof(maxValueCount));
+        if (Array.IndexOf(Names, "<>") >= 0 &&
+            ((Names.Length == 1 && OptionValueType != OptionValueType.None) ||
+                (Names.Length > 1 && MaxValueCount > 1)))
+            throw new ArgumentException(
+                "The default option handler '<>' cannot require values.",
+                nameof(prototype));
+    }
+
+    public string Prototype { get; }
+
+    public string Description { get; }
+
+    public OptionValueType OptionValueType { get; }
+
+    public int MaxValueCount { get; }
+    public bool Sensitive { get; }
+    public bool AllowsMultiple { get; }
+
+    public string[] Names { get; }
+
+    internal string[] ValueSeparators { get; private set; }
+    public abstract Type Type { get; }
+
+    public string[] GetNames()
+        => (string[])Names.Clone();
+
+    public string[] GetValueSeparators()
+    {
+        if (ValueSeparators == null)
+            return new string[0];
+        return (string[])ValueSeparators.Clone();
+    }
+
+    protected static T Parse<T>(string value, OptionContext c)
+    {
+        var conv = TypeDescriptor.GetConverter(typeof(T));
+        var t = default(T);
+        try
+        {
+            if (value != null)
+                t = (T)conv.ConvertFromString(value);
+        }
+        catch (FormatException) when (typeof(T).IsEnum)
+        {
+            throw new CommandException($"Could not convert string `{value}' to type {typeof(T).Name} for option `{c.OptionName}'. Valid values are {Enum.GetNames(typeof(T)).ReadableJoin()}.");
+        }
+        catch (Exception ex) when (!(ex is CommandException))
+        {
+            throw new CommandException($"Could not convert string `{value}' to type {typeof(T).Name} for option `{c.OptionName}'.");
+        }
+
+        return t;
+    }
+
+    OptionValueType ParsePrototype()
+    {
+        var c = '\0';
+        var seps = new List<string>();
+        for (var i = 0; i < Names.Length; ++i)
+        {
+            var name = Names[i];
+            if (name.Length == 0)
+                throw new ArgumentException("Empty option names are not supported.");
+
+            var end = name.IndexOfAny(NameTerminator);
+            if (end == -1)
+                continue;
+            Names[i] = name.Substring(0, end);
+            if (c == '\0' || c == name[end])
+                c = name[end];
+            else
+                throw new ArgumentException(
+                    string.Format("Conflicting option types: '{0}' vs. '{1}'.", c, name[end]));
+            AddSeparators(name, end, seps);
+        }
+
+        if (c == '\0')
+            return OptionValueType.None;
+
+        if (MaxValueCount <= 1 && seps.Count != 0)
+            throw new ArgumentException(
+                string.Format("Cannot provide key/value separators for Options taking {0} value(s).", MaxValueCount));
+        if (MaxValueCount > 1)
+        {
+            if (seps.Count == 0)
+                ValueSeparators = new[] { ":", "=" };
+            else if (seps.Count == 1 && seps[0].Length == 0)
+                ValueSeparators = null;
+            else
+                ValueSeparators = seps.ToArray();
+        }
+
+        return c == '=' ? OptionValueType.Required : OptionValueType.Optional;
+    }
+
+    static void AddSeparators(string name, int end, ICollection<string> seps)
+    {
+        var start = -1;
+        for (var i = end + 1; i < name.Length; ++i)
+            switch (name[i])
+            {
+                case '{':
+                    if (start != -1)
+                        throw new ArgumentException(
+                            string.Format("Ill-formed name/value separator found in \"{0}\".", name));
+                    start = i + 1;
+                    break;
+                case '}':
+                    if (start == -1)
+                        throw new ArgumentException(
+                            string.Format("Ill-formed name/value separator found in \"{0}\".", name));
+                    seps.Add(name.Substring(start, i - start));
+                    start = -1;
+                    break;
+                default:
+                    if (start == -1)
+                        seps.Add(name[i].ToString());
+                    break;
+            }
+
+        if (start != -1)
+            throw new ArgumentException(
+                string.Format("Ill-formed name/value separator found in \"{0}\".", name));
+    }
+
+    public void Invoke(OptionContext c)
+    {
+        OnParseComplete(c);
+        c.OptionName = null;
+        c.Option = null;
+        c.OptionValues.Clear();
+    }
+
+    protected abstract void OnParseComplete(OptionContext c);
+
+    public override string ToString()
+        => Prototype;
 }

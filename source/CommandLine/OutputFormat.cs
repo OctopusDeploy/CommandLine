@@ -1,10 +1,9 @@
 using System;
 
-namespace Octopus.CommandLine
+namespace Octopus.CommandLine;
+
+public enum OutputFormat
 {
-    public enum OutputFormat
-    {
-        Default,
-        Json
-    }
+    Default,
+    Json
 }

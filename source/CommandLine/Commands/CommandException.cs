@@ -1,12 +1,11 @@
 using System;
 
-namespace Octopus.CommandLine.Commands
+namespace Octopus.CommandLine.Commands;
+
+public class CommandException : Exception
 {
-    public class CommandException : Exception
+    public CommandException(string message)
+        : base(message)
     {
-        public CommandException(string message)
-            : base(message)
-        {
-        }
     }
 }

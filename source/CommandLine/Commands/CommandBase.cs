@@ -6,88 +6,87 @@ using System.Threading.Tasks;
 using Octopus.CommandLine.Extensions;
 using Octopus.CommandLine.OptionParsing;
 
-namespace Octopus.CommandLine.Commands
+namespace Octopus.CommandLine.Commands;
+
+public abstract class CommandBase : ICommand
 {
-    public abstract class CommandBase : ICommand
+    protected readonly ICommandOutputProvider commandOutputProvider;
+    protected readonly ISupportFormattedOutput formattedOutputInstance;
+    protected bool printHelp;
+
+    protected CommandBase(ICommandOutputProvider commandOutputProvider)
     {
-        protected readonly ICommandOutputProvider commandOutputProvider;
-        protected readonly ISupportFormattedOutput formattedOutputInstance;
-        protected bool printHelp;
+        this.commandOutputProvider = commandOutputProvider;
 
-        protected CommandBase(ICommandOutputProvider commandOutputProvider)
+        var options = Options.For("Common options");
+        options.Add<bool>("help", "[Optional] Print help for a command.", x => printHelp = true);
+        options.Add<OutputFormat>("helpOutputFormat=", $"[Optional] Output format for help, valid options are {Enum.GetNames(typeof(OutputFormat)).ReadableJoin("or")}", s => HelpOutputFormat = s);
+        formattedOutputInstance = this as ISupportFormattedOutput;
+        if (formattedOutputInstance != null)
+            options.Add<OutputFormat>("outputFormat=", $"[Optional] Output format, valid options are {Enum.GetNames(typeof(OutputFormat)).ReadableJoin("or")}", s => OutputFormat = s);
+        else
+            commandOutputProvider.PrintMessages = true;
+    }
+
+    public Options Options { get; } = new();
+
+    public OutputFormat OutputFormat { get; set; }
+
+    public OutputFormat HelpOutputFormat { get; set; }
+    public ICommandMetadata CommandMetadata => GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault() as ICommandMetadata;
+
+    public abstract Task Execute(string[] commandLineArguments);
+
+    public virtual void GetHelp(TextWriter writer, string[] args)
+    {
+        var executable = AssemblyHelper.GetExecutableName();
+        string commandName;
+        var description = string.Empty;
+        if (CommandMetadata == null)
         {
-            this.commandOutputProvider = commandOutputProvider;
-
-            var options = Options.For("Common options");
-            options.Add<bool>("help", "[Optional] Print help for a command.", x => printHelp = true);
-            options.Add<OutputFormat>("helpOutputFormat=", $"[Optional] Output format for help, valid options are {Enum.GetNames(typeof(OutputFormat)).ReadableJoin("or")}", s => HelpOutputFormat = s);
-            formattedOutputInstance = this as ISupportFormattedOutput;
-            if (formattedOutputInstance != null)
-                options.Add<OutputFormat>("outputFormat=", $"[Optional] Output format, valid options are {Enum.GetNames(typeof(OutputFormat)).ReadableJoin("or")}", s => OutputFormat = s);
-            else
-                commandOutputProvider.PrintMessages = true;
+            commandName = args.FirstOrDefault();
+        }
+        else
+        {
+            commandName = CommandMetadata.Name;
+            description = CommandMetadata.Description;
         }
 
-        public Options Options { get; } = new Options();
+        commandOutputProvider.PrintMessages = HelpOutputFormat == OutputFormat.Default;
+        if (HelpOutputFormat == OutputFormat.Json)
+            PrintJsonHelpOutput(writer, commandName, description);
+        else
+            PrintDefaultHelpOutput(writer, executable, commandName, description);
+    }
 
-        public OutputFormat OutputFormat { get; set; }
+    protected virtual void PrintDefaultHelpOutput(TextWriter writer, string executable, string commandName, string description)
+    {
+        commandOutputProvider.PrintCommandHelpHeader(executable, commandName, description, writer);
+        commandOutputProvider.PrintCommandOptions(Options, writer);
+    }
 
-        public OutputFormat HelpOutputFormat { get; set; }
-        public ICommandMetadata CommandMetadata => GetType().GetTypeInfo().GetCustomAttributes(typeof(CommandAttribute), true).FirstOrDefault() as ICommandMetadata;
-
-        public abstract Task Execute(string[] commandLineArguments);
-
-        public virtual void GetHelp(TextWriter writer, string[] args)
-        {
-            var executable = AssemblyHelper.GetExecutableName();
-            string commandName;
-            var description = string.Empty;
-            if (CommandMetadata == null)
+    void PrintJsonHelpOutput(TextWriter writer, string commandName, string description)
+    {
+        commandOutputProvider.Json(new
             {
-                commandName = args.FirstOrDefault();
-            }
-            else
-            {
-                commandName = CommandMetadata.Name;
-                description = CommandMetadata.Description;
-            }
-
-            commandOutputProvider.PrintMessages = HelpOutputFormat == OutputFormat.Default;
-            if (HelpOutputFormat == OutputFormat.Json)
-                PrintJsonHelpOutput(writer, commandName, description);
-            else
-                PrintDefaultHelpOutput(writer, executable, commandName, description);
-        }
-
-        protected virtual void PrintDefaultHelpOutput(TextWriter writer, string executable, string commandName, string description)
-        {
-            commandOutputProvider.PrintCommandHelpHeader(executable, commandName, description, writer);
-            commandOutputProvider.PrintCommandOptions(Options, writer);
-        }
-
-        void PrintJsonHelpOutput(TextWriter writer, string commandName, string description)
-        {
-            commandOutputProvider.Json(new
-                {
-                    Command = commandName,
-                    Description = description,
-                    Options = Options.OptionSets.OrderByDescending(x => x.Key)
-                        .Select(g => new
+                Command = commandName,
+                Description = description,
+                Options = Options.OptionSets.OrderByDescending(x => x.Key)
+                    .Select(g => new
+                    {
+                        Group = g.Key,
+                        Parameters = g.Value.Select(p => new
                         {
-                            Group = g.Key,
-                            Parameters = g.Value.Select(p => new
-                            {
-                                Name = p.Names.First(),
-                                Usage = $"{(p.Prototype.Length == 1 ? "-" : "--")}{p.Prototype}{(p.Prototype.EndsWith("=") ? "VALUE" : string.Empty)}",
-                                p.Description,
-                                Type = p.Type.Name,
-                                Sensitive = p.Sensitive ? (bool?)true : null,
-                                AllowsMultiple = p.AllowsMultiple ? (bool?)true : null, //allows tools (such as nuke.build) to auto-generate better code
-                                Values = p.Type.IsEnum ? Enum.GetNames(p.Type).Where(x => p.Type.GetField(x)?.GetCustomAttribute<ObsoleteAttribute>() == null) : null
-                            })
+                            Name = p.Names.First(),
+                            Usage = $"{(p.Prototype.Length == 1 ? "-" : "--")}{p.Prototype}{(p.Prototype.EndsWith("=") ? "VALUE" : string.Empty)}",
+                            p.Description,
+                            Type = p.Type.Name,
+                            Sensitive = p.Sensitive ? (bool?)true : null,
+                            AllowsMultiple = p.AllowsMultiple ? (bool?)true : null, //allows tools (such as nuke.build) to auto-generate better code
+                            Values = p.Type.IsEnum ? Enum.GetNames(p.Type).Where(x => p.Type.GetField(x)?.GetCustomAttribute<ObsoleteAttribute>() == null) : null
                         })
-                },
-                writer);
-        }
+                    })
+            },
+            writer);
     }
 }
