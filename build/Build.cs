@@ -14,11 +14,13 @@ using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Tools.OctoVersion;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
-[CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
+
+[VerbosityMapping(typeof(DotNetVerbosity),
+    Verbose = nameof(DotNetVerbosity.normal))]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -40,8 +42,8 @@ class Build : NukeBuild
         Name = "OCTOVERSION_CurrentBranch")]
     readonly string BranchName;
 
-    [OctoVersion(UpdateBuildNumber = true, BranchParameter = nameof(BranchName),
-        AutoDetectBranchParameter = nameof(AutoDetectBranch), Framework = "net6.0")]
+    [OctoVersion(UpdateBuildNumber = true, Branch = nameof(BranchName),
+        AutoDetectBranch = true, Framework = "net8.0")]
     readonly OctoVersionInfo OctoVersionInfo;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
@@ -52,8 +54,8 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(ArtifactsDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.CreateOrCleanDirectory());
+            ArtifactsDirectory.CreateOrCleanDirectory();
         });
 
     Target Restore => _ => _
@@ -98,7 +100,7 @@ class Build : NukeBuild
             {
                 var inputFolder = OctopusCommandLineFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusCommandLineFolder / "bin" / Configuration / $"{target}-Merged";
-                EnsureExistingDirectory(outputFolder);
+                outputFolder.CreateOrCleanDirectory();
 
                 // The call to ILRepack with .EnableInternalize() requires the Octopus.CommandLine.dll assembly to be first in the list.
                 var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octopus.*.dll")
@@ -117,8 +119,8 @@ class Build : NukeBuild
                     .SetLib(inputFolder)
                 );
 
-                DeleteDirectory(inputFolder);
-                MoveDirectory(outputFolder, inputFolder);
+                inputFolder.DeleteDirectory();
+                outputFolder.MoveToDirectory(inputFolder);
             }
         });
 
@@ -135,17 +137,13 @@ class Build : NukeBuild
 
                 DotNetPack(_ => _
                     .SetProject(Solution)
-                    .SetProcessArgumentConfigurator(args =>
-                    {
-                        args.Add("/p:NuspecFile=" + nuspec);
-                        return args;
-                    })
+                    .SetProcessAdditionalArguments("/p:NuspecFile=" + nuspec)
                     .SetVersion(OctoVersionInfo.FullSemVer)
                     .SetConfiguration(Configuration)
                     .SetOutputDirectory(ArtifactsDirectory)
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
-                    .SetVerbosity(DotNetVerbosity.Normal)
+                    .SetVerbosity(DotNetVerbosity.normal)
                 );
             }
             finally
@@ -167,9 +165,11 @@ class Build : NukeBuild
         .TriggeredBy(Pack)
         .Executes(() =>
         {
-            EnsureExistingDirectory(LocalPackagesDirectory);
+            //EnsureExistingDirectory(LocalPackagesDirectory.exist);
+            if (!LocalPackagesDirectory.Exists()) throw new DirectoryNotFoundException();
+            
             ArtifactsDirectory.GlobFiles("*.nupkg")
-                .ForEach(package => CopyFileToDirectory(package, LocalPackagesDirectory, FileExistsPolicy.Overwrite));
+                .ForEach(package => package.CopyToDirectory(LocalPackagesDirectory, ExistsPolicy.FileOverwrite));
         });
 
     Target Default => _ => _
