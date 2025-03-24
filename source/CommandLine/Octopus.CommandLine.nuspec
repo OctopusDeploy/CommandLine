@@ -15,12 +15,12 @@
         <repository url="https://github.com/OctopusDeploy/CommandLine" />
         <dependencies>
             <group targetFramework="net8.0">
-                <dependency id="Serilog" version="2.3.0" exclude="Build,Analyzers" />
+                <dependency id="Serilog" version="4.2.0" exclude="Build,Analyzers" />
             </group>
         </dependencies>
     </metadata>
     <files>
         <file src="icon.png" target="images\" />
-        <file src="bin\$configuration$\net8.0\Octopus.CommandLine.dll" target="lib\net8.0" />
+        <file src="CommandLine\bin\$configuration$\net8.0\Octopus.CommandLine.dll" target="lib\net8.0" />
     </files>
 </package>
