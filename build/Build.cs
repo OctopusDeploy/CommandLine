@@ -135,7 +135,12 @@ class Build : NukeBuild
 
                 DotNetPack(_ => _
                     .SetProject(OctopusCommandLineFolder)
-                    .SetProcessAdditionalArguments("/p:NuspecFile=" + nuspec)
+                    //.SetProcessAdditionalArguments("/p:NuspecFile=" + nuspec)
+                    .SetProcessArgumentConfigurator(args =>
+                    {
+                        args.Add("/p:NuspecFile=" + nuspec);
+                        return args;
+                    })
                     .SetVersion(OctoVersionInfo.FullSemVer)
                     .SetConfiguration(Configuration)
                     .SetOutputDirectory(ArtifactsDirectory)
