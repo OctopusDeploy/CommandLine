@@ -19,7 +19,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
 [UnsetVisualStudioEnvironmentVariables]
-[VerbosityMapping(typeof(DotNetVerbosity), Verbose = nameof(DotNetVerbosity.normal))]
+[VerbosityMapping(typeof(DotNetVerbosity), Verbose = nameof(DotNetVerbosity.diagnostic))]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -118,7 +118,7 @@ class Build : NukeBuild
                 );
 
                 inputFolder.DeleteDirectory();
-                outputFolder.MoveToDirectory(inputFolder);
+                outputFolder.CopyToDirectory(inputFolder);
             }
         });
 
