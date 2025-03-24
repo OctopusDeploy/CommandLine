@@ -147,7 +147,7 @@ class Build : NukeBuild
                     .SetOutputDirectory(ArtifactsDirectory)
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
-                    .SetVerbosity(DotNetVerbosity.Normal)
+                    .SetVerbosity(DotNetVerbosity.normal)
                 );
             }
             finally
