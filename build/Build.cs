@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Nuke.Common;
+using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -18,9 +19,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
 [UnsetVisualStudioEnvironmentVariables]
-
-[VerbosityMapping(typeof(DotNetVerbosity),
-    Verbose = nameof(DotNetVerbosity.normal))]
+[VerbosityMapping(typeof(DotNetVerbosity), Verbose = nameof(DotNetVerbosity.normal))]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -40,11 +39,10 @@ class Build : NukeBuild
     [Parameter(
         "Branch name for OctoVersion to use to calculate the version number. Can be set via the environment variable OCTOVERSION_CurrentBranch.",
         Name = "OCTOVERSION_CurrentBranch")]
-    readonly string BranchName;
+    string BranchName;
 
-    [OctoVersion(UpdateBuildNumber = true, Branch = nameof(BranchName),
-        AutoDetectBranch = true, Framework = "net8.0")]
-    readonly OctoVersionInfo OctoVersionInfo;
+    [OctoVersion(BranchMember = nameof(BranchName), AutoDetectBranchMember = nameof(AutoDetectBranch), Framework = "net8.0")]
+    public OctoVersionInfo OctoVersionInfo;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
@@ -73,9 +71,9 @@ class Build : NukeBuild
             DotNetBuild(_ => _
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
+                .EnableNoRestore()
                 .SetVersion(OctoVersionInfo.FullSemVer)
-                .SetInformationalVersion(OctoVersionInfo.InformationalVersion)
-                .EnableNoRestore());
+                .SetInformationalVersion(OctoVersionInfo.InformationalVersion));
         });
 
     [PublicAPI]
@@ -144,6 +142,7 @@ class Build : NukeBuild
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
                     .SetVerbosity(DotNetVerbosity.normal)
+                    .AddProperty("Version", OctoVersionInfo.FullSemVer)
                 );
             }
             finally
