@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Nuke.Common;
+using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -16,9 +17,10 @@ using Nuke.Common.Utilities.Collections;
 using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
-[CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
+[VerbosityMapping(typeof(DotNetVerbosity), Verbose = nameof(DotNetVerbosity.diagnostic))]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -40,9 +42,9 @@ class Build : NukeBuild
         Name = "OCTOVERSION_CurrentBranch")]
     readonly string BranchName;
 
-    [OctoVersion(UpdateBuildNumber = true, BranchParameter = nameof(BranchName),
-        AutoDetectBranchParameter = nameof(AutoDetectBranch), Framework = "net6.0")]
-    readonly OctoVersionInfo OctoVersionInfo;
+    [OctoVersion(BranchMember = nameof(BranchName),
+        AutoDetectBranchMember = nameof(AutoDetectBranch), Framework = "net8.0")]
+     public OctoVersionInfo OctoVersionInfo;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
@@ -145,7 +147,7 @@ class Build : NukeBuild
                     .SetOutputDirectory(ArtifactsDirectory)
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
-                    .SetVerbosity(DotNetVerbosity.Normal)
+                    .SetVerbosity(DotNetVerbosity.normal)
                 );
             }
             finally
