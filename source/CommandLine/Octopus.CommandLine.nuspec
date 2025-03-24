@@ -4,14 +4,14 @@
     <metadata>
         <id>Octopus.CommandLine</id>
         <version>$version$</version>
-        <authors>Octopus Deploy Pty. Ltd.</authors>
+        <authors>Octopus Deploy</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <license type="expression">Apache-2.0</license>
         <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
         <icon>images\icon.png</icon>
         <projectUrl>https://github.com/OctopusDeploy/CommandLine</projectUrl>
         <description>The command line parsing library used by many of Octopus apps. Supports global and command specific help, json output, auto-complete and more.</description>
-        <copyright>Copyright © Octopus Deploy 2025</copyright>
+        <copyright>Octopus Deploy Pty Ltd</copyright>
         <repository url="https://github.com/OctopusDeploy/CommandLine" />
         <dependencies>
             <group targetFramework="net8.0">
@@ -21,6 +21,6 @@
     </metadata>
     <files>
         <file src="icon.png" target="images\" />
-        <file src="bin\$configuration$\net8.0\Octopus.CommandLine.dll" target="lib\net8.0" />
+        <file src="bin\release\net8.0\Octopus.CommandLine.dll" target="lib\net8.0" />
     </files>
 </package>

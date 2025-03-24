@@ -134,7 +134,7 @@ class Build : NukeBuild
                 ReplaceTextInFiles(nuspecPath, "\\$configuration$\\", $"\\{Configuration.ToString()}\\");
 
                 DotNetPack(_ => _
-                    .SetProject(OctopusCommandLineFolder)
+                    .SetProject(Solution)
                     //.SetProcessAdditionalArguments("/p:NuspecFile=" + nuspec)
                     .SetProcessArgumentConfigurator(args =>
                     {
