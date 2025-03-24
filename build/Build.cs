@@ -134,7 +134,7 @@ class Build : NukeBuild
                 ReplaceTextInFiles(nuspecPath, "\\$configuration$\\", $"\\{Configuration.ToString()}\\");
 
                 DotNetPack(_ => _
-                    .SetProject(SourceDirectory / "Octopus.CommandLine")
+                    .SetProject(OctopusCommandLineFolder)
                     .SetProcessAdditionalArguments("/p:NuspecFile=" + nuspec)
                     .SetVersion(OctoVersionInfo.FullSemVer)
                     .SetConfiguration(Configuration)
