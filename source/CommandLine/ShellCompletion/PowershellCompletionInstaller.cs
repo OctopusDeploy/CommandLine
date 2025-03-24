@@ -35,7 +35,7 @@ public class PowershellCompletionInstaller : PowershellCompletionInstallerBase
 
     public override void Install(bool dryRun)
     {
-        if (ExecutionEnvironment.IsRunningOnNix || ExecutionEnvironment.IsRunningOnMac || ExecutionEnvironment.IsRunningOnMono)
+        if (ExecutionEnvironment.IsRunningOnNix || ExecutionEnvironment.IsRunningOnMac)
             throw new CommandException("Unable to install for powershell on non-windows platforms. Please use --shell=pwsh instead.");
         base.Install(dryRun);
     }
