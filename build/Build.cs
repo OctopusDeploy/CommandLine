@@ -15,6 +15,7 @@ using Nuke.Common.Tools.ILRepack;
 using Nuke.Common.Tools.OctoVersion;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
+using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.SignTool.SignToolTasks;
 
@@ -52,8 +53,8 @@ class Build : NukeBuild
     Target Clean => _ => _
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.CreateOrCleanDirectory());
-            ArtifactsDirectory.CreateOrCleanDirectory();
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
+            EnsureCleanDirectory(ArtifactsDirectory);
         });
 
     Target Restore => _ => _
@@ -71,9 +72,9 @@ class Build : NukeBuild
             DotNetBuild(_ => _
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
-                .EnableNoRestore()
                 .SetVersion(OctoVersionInfo.FullSemVer)
-                .SetInformationalVersion(OctoVersionInfo.InformationalVersion));
+                .SetInformationalVersion(OctoVersionInfo.InformationalVersion)
+                .EnableNoRestore());
         });
 
     [PublicAPI]
@@ -98,7 +99,7 @@ class Build : NukeBuild
             {
                 var inputFolder = OctopusCommandLineFolder / "bin" / Configuration / target;
                 var outputFolder = OctopusCommandLineFolder / "bin" / Configuration / $"{target}-Merged";
-                outputFolder.CreateOrCleanDirectory();
+                EnsureExistingDirectory(outputFolder);
 
                 // The call to ILRepack with .EnableInternalize() requires the Octopus.CommandLine.dll assembly to be first in the list.
                 var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octopus.*.dll")
@@ -116,9 +117,9 @@ class Build : NukeBuild
                     .EnableXmldocs()
                     .SetLib(inputFolder)
                 );
-
-                inputFolder.DeleteDirectory();
-                outputFolder.CopyToDirectory(inputFolder);
+                
+                DeleteDirectory(inputFolder);
+                MoveDirectory(outputFolder, inputFolder);
             }
         });
 
@@ -146,7 +147,7 @@ class Build : NukeBuild
                     .SetOutputDirectory(ArtifactsDirectory)
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
-                    .SetVerbosity(DotNetVerbosity.normal)
+                    .SetVerbosity(DotNetVerbosity.diagnostic)
                 );
             }
             finally
