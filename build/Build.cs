@@ -142,7 +142,6 @@ class Build : NukeBuild
                     .EnableNoBuild()
                     .DisableIncludeSymbols()
                     .SetVerbosity(DotNetVerbosity.normal)
-                    .AddProperty("Version", OctoVersionInfo.FullSemVer)
                 );
             }
             finally
