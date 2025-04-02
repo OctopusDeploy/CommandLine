@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.CommandLine;
@@ -32,11 +32,10 @@ public class CompleteCommandFixture
         logger = new LoggerConfiguration().WriteTo.TextWriter(output).CreateLogger();
         commandOutputProvider = new CommandOutputProvider("TestApp", "1.0.0", new DefaultCommandOutputJsonSerializer(), logger);
         commandLocator.List()
-            .Returns(new ICommandMetadata[]
-            {
+            .Returns([
                 new CommandAttribute("test"),
                 new CommandAttribute("help")
-            });
+            ]);
         var helpCommand = new HelpCommand(new Lazy<ICommandLocator>(() => commandLocator), commandOutputProvider);
         var testCommand = new TestCommand(commandOutputProvider);
         commandLocator.Find("help").Returns(helpCommand);
@@ -47,59 +46,59 @@ public class CompleteCommandFixture
     [Test]
     public async Task ShouldReturnSubCommandSuggestions()
     {
-        await completeCommand.Execute(new[] { "he" });
-
+        await completeCommand.Execute(["he"]);
         output.ToString()
-            .Should()
-            .Contain("help")
-            .And.NotContain("test");
+            .ShouldSatisfyAllConditions(
+                actual => actual.ShouldContain("help"),
+                actual => actual.ShouldNotContain("test")
+            );
     }
 
     [Test]
     public async Task ShouldReturnParameterSuggestions()
     {
-        await completeCommand.Execute(new[] { "test", "--ap" });
+        await completeCommand.Execute(["test", "--ap"]);
         output.ToString()
-            .Should()
-            .Contain("--apiKey");
+            .ShouldContain("--apiKey");
     }
 
     [Test]
     public async Task ShouldReturnCommonOptionsWhenSingleEmptyParameter()
     {
-        await completeCommand.Execute(new[] { "--" });
+        await completeCommand.Execute(["--"]);
         output.ToString()
-            .Should()
-            .Contain("--helpOutputFormat");
+            .ShouldContain("--helpOutputFormat");
     }
 
     [Test]
     public async Task ShouldReturnOptionSuggestions()
     {
-        await completeCommand.Execute(new[] { "--helpOut" });
+        await completeCommand.Execute(["--helpOut"]);
+
         output.ToString()
-            .Should()
-            .Contain("--helpOutputFormat")
-            .And.NotContain("--help\n");
+            .ShouldSatisfyAllConditions(
+                actual => actual.ShouldContain("--helpOutputFormat"),
+                actual => actual.ShouldNotContain("--help\n")
+            );
     }
 
     [Test]
     public async Task ShouldReturnAllSubCommandsWhenEmptyArguments()
     {
-        await completeCommand.Execute(new[] { "" });
+        await completeCommand.Execute([""]);
         output.ToString()
-            .Should()
-            .Contain("help")
-            .And.Contain("test");
+            .ShouldSatisfyAllConditions(
+                actual => actual.ShouldContain("help"),
+                actual => actual.ShouldContain("test")
+        );
     }
 
     [Test]
     public async Task ShouldStopSubCommandCompletionAfterOptionSuggestion()
     {
-        await completeCommand.Execute(new[] { "test", "--api", "API-KEY", "--u" });
+        await completeCommand.Execute(["test", "--api", "API-KEY", "--u"]);
         output.ToString()
-            .Should()
-            .Contain("--url");
+            .ShouldContain("--url");
     }
 
     [Test]
@@ -109,8 +108,7 @@ public class CompleteCommandFixture
     {
         await completeCommand.Execute(commandLine.Split(' '));
         output.ToString()
-            .Should()
-            .Contain("Where <command> is the current command line to filter auto-completions");
+            .ShouldContain("Where <command> is the current command line to filter auto-completions");
     }
 
     [TearDown]

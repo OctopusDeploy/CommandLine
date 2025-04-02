@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using FluentAssertions;
+using Shouldly;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.CommandLine;
@@ -37,19 +37,19 @@ public class HelpCommandFixture
     public void ShouldPrintGeneralHelpWhenNoArgsGiven()
     {
         commandLocator.List()
-            .Returns(new ICommandMetadata[]
-            {
+            .Returns([
                 new Metadata { Name = "create-foo" },
                 new Metadata { Name = "create-bar" }
-            });
+            ]);
 
         helpCommand.Execute();
 
         output.ToString()
-            .Should()
-            .MatchRegex(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) <command> \[<options>\]")
-            .And.Contain("Where <command> is one of:")
-            .And.Contain("create-foo");
+            .ShouldSatisfyAllConditions(
+                actual => actual.ShouldMatch(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) <command> \[<options>\]"),
+                actual => actual.ShouldContain("Where <command> is one of:"),
+                actual => actual.ShouldContain("create-foo")
+        );
     }
 
     [Test]
@@ -60,8 +60,7 @@ public class HelpCommandFixture
         helpCommand.Execute("speak");
 
         output.ToString()
-            .Should()
-            .MatchRegex(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) speak \[<options>\]");
+            .ShouldMatch(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) speak \[<options>\]");
     }
 
     [Test]
@@ -70,7 +69,7 @@ public class HelpCommandFixture
         commandLocator.Find("foo").Returns((ICommand)null);
         helpCommand.Execute("foo");
 
-        Assert.That(output.ToString(), Does.Contain("Command 'foo' is not supported"));
+        output.ToString().ShouldContain("Command 'foo' is not supported");
     }
 
     [TearDown]
