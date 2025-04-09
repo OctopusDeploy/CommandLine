@@ -13,7 +13,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <!-- Restore insecure BinaryFormatter package until we can move to Nuke 9 which doesn't need it -->
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.3" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.4" />
   </ItemGroup>
   
   <ItemGroup>
