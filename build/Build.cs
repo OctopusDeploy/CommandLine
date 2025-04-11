@@ -44,7 +44,7 @@ class Build : NukeBuild
 
     [OctoVersion(BranchMember = nameof(BranchName),
         AutoDetectBranchMember = nameof(AutoDetectBranch), Framework = "net8.0")]
-     public OctoVersionInfo OctoVersionInfo;
+    public OctoVersionInfo OctoVersionInfo;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
