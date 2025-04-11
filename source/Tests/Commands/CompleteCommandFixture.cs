@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Shouldly;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.CommandLine;
 using Octopus.CommandLine.Commands;
 using Serilog;
+using Shouldly;
 
 namespace Tests.Commands;
 
@@ -90,7 +90,7 @@ public class CompleteCommandFixture
             .ShouldSatisfyAllConditions(
                 actual => actual.ShouldContain("help"),
                 actual => actual.ShouldContain("test")
-        );
+            );
     }
 
     [Test]
