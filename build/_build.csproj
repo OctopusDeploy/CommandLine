@@ -18,7 +18,7 @@
   
   <ItemGroup>
     <PackageReference Include="Nuke.Common" Version="8.1.0" />
-    <PackageReference Include="ILRepack" Version="2.0.41">
+    <PackageReference Include="ILRepack" Version="2.0.44">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
