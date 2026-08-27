@@ -43,7 +43,7 @@ class Build : NukeBuild
     readonly string BranchName;
 
     [OctoVersion(BranchMember = nameof(BranchName),
-        AutoDetectBranchMember = nameof(AutoDetectBranch), Framework = "net8.0")]
+        AutoDetectBranchMember = nameof(AutoDetectBranch), Framework = "net10.0")]
      public OctoVersionInfo OctoVersionInfo;
 
     AbsolutePath SourceDirectory => RootDirectory / "source";
