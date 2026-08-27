@@ -1,0 +1,6 @@
+# Hi! If you're here, it's probably because there's a failing build somewhere. In this file
+# you can add .gitignore-style expressions to exclude files from profanity checking.
+
+# The scanner runs with --no-ignore --hidden, so it reads .git/ as well. Git's own sample
+# hooks contain wording that trips the filter, on every clean checkout.
+.git/
