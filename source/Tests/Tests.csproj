@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <LangVersion>latest</LangVersion>
+        <!-- CI agents provision .NET from global.json, so only the net10 runtime is
+             present. Roll forward lets the net8.0 test host run there; where a real
+             8.0.x runtime exists (Windows agents) it is still preferred. -->
+        <RollForward Condition="'$(TargetFramework)' == 'net8.0'">Major</RollForward>
     </PropertyGroup>
 
     <ItemGroup>
