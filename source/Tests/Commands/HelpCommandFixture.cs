@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using Shouldly;
 using NSubstitute;
 using NUnit.Framework;
 using Octopus.CommandLine;
 using Octopus.CommandLine.Commands;
 using Serilog;
+using Shouldly;
 using Tests.Helpers;
 
 namespace Tests.Commands;
@@ -49,7 +49,7 @@ public class HelpCommandFixture
                 actual => actual.ShouldMatch(@"Usage: (dotnet|testhost.*|ReSharperTestRunner64) <command> \[<options>\]"),
                 actual => actual.ShouldContain("Where <command> is one of:"),
                 actual => actual.ShouldContain("create-foo")
-        );
+            );
     }
 
     [Test]

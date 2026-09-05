@@ -22,7 +22,7 @@ public static class CommandSuggester
             .Take(2)
             .Except(new[] { exeName, exeNameWithoutExtension, CompleteCommand.Name }, StringComparer.OrdinalIgnoreCase)
             .Union(words.Skip(2))
-            .Where(word => string.IsNullOrWhiteSpace(word) == false)
+            .Where(word => !string.IsNullOrWhiteSpace(word))
             .ToArray();
 
         var numberOfArgs = words.Length;
