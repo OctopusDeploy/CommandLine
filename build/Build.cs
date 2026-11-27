@@ -103,7 +103,7 @@ class Build : NukeBuild
                 EnsureExistingDirectory(outputFolder);
 
                 // The call to ILRepack with .EnableInternalize() requires the Octopus.CommandLine.dll assembly to be first in the list.
-                var inputAssemblies = inputFolder.GlobFiles("NewtonSoft.Json.dll", "Octopus.*.dll")
+                var inputAssemblies = inputFolder.GlobFiles("Newtonsoft.Json.dll", "Octopus.*.dll")
                     .Select(x => x.ToString())
                     .OrderByDescending(x => x.Contains("Octopus.CommandLine.dll"))
                     .ThenBy(x => x)
